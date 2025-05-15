@@ -11,7 +11,7 @@ function getFrontCookie() {
   let frontCookie = document.cookie;
   console.log("frontCookie="+frontCookie)
   if (frontCookie === '') {
-    frontCookie = "__system_environment__=https://app.flowborder.com; __user_state_cookie__=huss22dL9qOeWHptx3rL7vYxYMSZ2tBSk2ypdjvK+daDjYqLu/+Syv7Ylk2GiOVqczRLooLEMwb5UllOtkwLkxsDmJ2dODETGue7BHeeN13vRRa+6Vu6KhZ+3qjoyx6hhOzmv1e1bi5AhZe5Hy0EGiag28kurHsTZdOkrpLR2J6uGmFQQp4i7i9BnKcefPQR3HlY4V/UyRqvE6fLFhKdXDYEe98vkAMgY/OjtgtzO1SR11LIqNHkmiH3BBzWQMJf0hiBVYeFsHWCpZ/rOuDL1q+/SQOruRVtdYDliZL1oWnvYYsXBFH6GXGcATeF1OUkKWtUDTBseF2KzLipw2RMLOyzwhqFZBvIuj9H+QWUO0vzAqOP7qSey4/eazxGNwHsxI7cCJSkCaR+bbRSQSIbssSIijiF+6tP60eDxv2I+8YXyA9hFmz9EFoE7RnZyqk4TmwLttJfOIOLqyHBueswxTpG0GGy2QsRtZIDLt+JHh05J7mgpYEc+AjoX10aO9qPNAhLCfmWOZYM4MHJiIySJlOI3WOJCGqkDsEX9g==";
+    frontCookie = "";
   }
   return frontCookie
 }
@@ -67,13 +67,15 @@ async function fetchAndExtractUserData(cookie) {
 
 (async function() {
 
-  userDataForCrisp = await fetchAndExtractUserData(getFrontCookie());
-  console.log(userDataForCrisp)
-
-  window.CRISP_TOKEN_ID   = userDataForCrisp.userId;  // o UUID gerado no backend
-
-  $crisp.push(["set", "user:email", userDataForCrisp.userEmail]);
-  $crisp.push(["set", "user:nickname", userDataForCrisp.fullName + " ("+userDataForCrisp.userId+")"]);
+  let frontCookie = getFrontCookie()
+  let userDataForCrisp = ""
+  if (frontCookie !== "") {
+    userDataForCrisp = await fetchAndExtractUserData(frontCookie);
+    window.CRISP_TOKEN_ID   = userDataForCrisp.userId;  // o UUID gerado no backend
+    $crisp.push(["set", "user:email", userDataForCrisp.userEmail]);
+    $crisp.push(["set", "user:nickname", userDataForCrisp.fullName + " ("+userDataForCrisp.userId+")"]);
+  }
+  console.log(userDataForCrisp);
 
   (function() {
     var d = document;
@@ -87,18 +89,14 @@ async function fetchAndExtractUserData(cookie) {
 
     console.log("Crisp Loaded");
   
-    $crisp.push(["do", "chat:hide"]);
-    console.log("Crisp is Hidden, type crisp() to show Crisp");
-    
-    let frontCookie = document.cookie;
-    console.log("frontCookie="+frontCookie)
-    if (frontCookie === '') {
-      frontCookie = "__system_environment__=https://app.flowborder.com; __user_state_cookie__=huss22dL9qOeWHptx3rL7vYxYMSZ2tBSk2ypdjvK+daDjYqLu/+Syv7Ylk2GiOVqczRLooLEMwb5UllOtkwLkxsDmJ2dODETGue7BHeeN13vRRa+6Vu6KhZ+3qjoyx6hhOzmv1e1bi5AhZe5Hy0EGiag28kurHsTZdOkrpLR2J6uGmFQQp4i7i9BnKcefPQR3HlY4V/UyRqvE6fLFhKdXDYEe98vkAMgY/OjtgtzO1SR11LIqNHkmiH3BBzWQMJf0hiBVYeFsHWCpZ/rOuDL1q+/SQOruRVtdYDliZL1oWnvYYsXBFH6GXGcATeF1OUkKWtUDTBseF2KzLipw2RMLOyzwhqFZBvIuj9H+QWUO0vzAqOP7qSey4/eazxGNwHsxI7cCJSkCaR+bbRSQSIbssSIijiF+6tP60eDxv2I+8YXyA9hFmz9EFoE7RnZyqk4TmwLttJfOIOLqyHBueswxTpG0GGy2QsRtZIDLt+JHh05J7mgpYEc+AjoX10aO9qPNAhLCfmWOZYM4MHJiIySJlOI3WOJCGqkDsEX9g==";
+    if (frontCookie !== "") {
+      console.log("Hidding Crisp, type crisp() to show Crisp");
+      $crisp.push(["do", "chat:hide"]);
+      
+      console.log("trying to push user_id to Crisp Session");
+      $crisp.push(["set", "session:data", ["user_id", userDataForCrisp.userId]]);
+      console.log("pushed "+userDataForCrisp.userId + "successful");
     }
-  
-    console.log("trying to push user_id to Crisp Session");
-    $crisp.push(["set", "session:data", ["user_id", userDataForCrisp.userId]]);
-    console.log("pushed: "+userDataForCrisp.userId);
   
   }]);
 
