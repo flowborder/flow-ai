@@ -4,7 +4,7 @@ window.CRISP_RUNTIME_CONFIG = {
   lock_maximized       : false,  // permite maximizar e depois voltar
   lock_full_view       : false,   // permite abrir e fechar o overlay
   cross_origin_cookies : true,
-  session_merge: true
+  session_merge: false
 };
 
 function getFrontCookie() {
