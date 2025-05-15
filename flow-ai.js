@@ -66,8 +66,8 @@ console.log(userDataForCrisp)
 
 window.CRISP_TOKEN_ID   = userDataForCrisp.userId;  // o UUID gerado no backend
 
-$crisp.push(["set", "user:email", userEmail]);
-$crisp.push(["set", "user:nickname", fullName + " ("+userId+")"]);
+$crisp.push(["set", "user:email", userDataForCrisp.userEmail]);
+$crisp.push(["set", "user:nickname", userDataForCrisp.fullName + " ("+userDataForCrisp.userId+")"]);
 
 (function() {
   var d = document;
