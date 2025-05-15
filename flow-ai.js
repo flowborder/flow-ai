@@ -65,48 +65,49 @@ async function fetchAndExtractUserData(cookie) {
   // ex: iniciar Crisp, popular campos etc.
 }
 
-userDataForCrisp = fetchAndExtractUserData(getFrontCookie());
-console.log(userDataForCrisp)
+(async function() {
 
-window.CRISP_TOKEN_ID   = userDataForCrisp.userId;  // o UUID gerado no backend
+  userDataForCrisp = await fetchAndExtractUserData(getFrontCookie());
+  console.log(userDataForCrisp)
 
-$crisp.push(["set", "user:email", userDataForCrisp.userEmail]);
-$crisp.push(["set", "user:nickname", userDataForCrisp.fullName + " ("+userDataForCrisp.userId+")"]);
+  window.CRISP_TOKEN_ID   = userDataForCrisp.userId;  // o UUID gerado no backend
 
-(function() {
-  var d = document;
-  var s = d.createElement("script");
-  s.src = "https://client.crisp.chat/l.js";
-  s.async = 1;
-  d.getElementsByTagName("head")[0].appendChild(s);
-})();
+  $crisp.push(["set", "user:email", userDataForCrisp.userEmail]);
+  $crisp.push(["set", "user:nickname", userDataForCrisp.fullName + " ("+userDataForCrisp.userId+")"]);
 
+  (function() {
+    var d = document;
+    var s = d.createElement("script");
+    s.src = "https://client.crisp.chat/l.js";
+    s.async = 1;
+    d.getElementsByTagName("head")[0].appendChild(s);
+  })();
 
-$crisp.push(["on", "session:loaded", function () {
+  $crisp.push(["on", "session:loaded", function () {
 
-  console.log("Crisp Loaded");
-
-  $crisp.push(["do", "chat:hide"]);
-  console.log("Crisp is Hidden, type crisp() to show Crisp");
+    console.log("Crisp Loaded");
   
-  let frontCookie = document.cookie;
-  console.log("frontCookie="+frontCookie)
-  if (frontCookie === '') {
-    frontCookie = "__system_environment__=https://app.flowborder.com; __user_state_cookie__=huss22dL9qOeWHptx3rL7vYxYMSZ2tBSk2ypdjvK+daDjYqLu/+Syv7Ylk2GiOVqczRLooLEMwb5UllOtkwLkxsDmJ2dODETGue7BHeeN13vRRa+6Vu6KhZ+3qjoyx6hhOzmv1e1bi5AhZe5Hy0EGiag28kurHsTZdOkrpLR2J6uGmFQQp4i7i9BnKcefPQR3HlY4V/UyRqvE6fLFhKdXDYEe98vkAMgY/OjtgtzO1SR11LIqNHkmiH3BBzWQMJf0hiBVYeFsHWCpZ/rOuDL1q+/SQOruRVtdYDliZL1oWnvYYsXBFH6GXGcATeF1OUkKWtUDTBseF2KzLipw2RMLOyzwhqFZBvIuj9H+QWUO0vzAqOP7qSey4/eazxGNwHsxI7cCJSkCaR+bbRSQSIbssSIijiF+6tP60eDxv2I+8YXyA9hFmz9EFoE7RnZyqk4TmwLttJfOIOLqyHBueswxTpG0GGy2QsRtZIDLt+JHh05J7mgpYEc+AjoX10aO9qPNAhLCfmWOZYM4MHJiIySJlOI3WOJCGqkDsEX9g==";
-  }
+    $crisp.push(["do", "chat:hide"]);
+    console.log("Crisp is Hidden, type crisp() to show Crisp");
+    
+    let frontCookie = document.cookie;
+    console.log("frontCookie="+frontCookie)
+    if (frontCookie === '') {
+      frontCookie = "__system_environment__=https://app.flowborder.com; __user_state_cookie__=huss22dL9qOeWHptx3rL7vYxYMSZ2tBSk2ypdjvK+daDjYqLu/+Syv7Ylk2GiOVqczRLooLEMwb5UllOtkwLkxsDmJ2dODETGue7BHeeN13vRRa+6Vu6KhZ+3qjoyx6hhOzmv1e1bi5AhZe5Hy0EGiag28kurHsTZdOkrpLR2J6uGmFQQp4i7i9BnKcefPQR3HlY4V/UyRqvE6fLFhKdXDYEe98vkAMgY/OjtgtzO1SR11LIqNHkmiH3BBzWQMJf0hiBVYeFsHWCpZ/rOuDL1q+/SQOruRVtdYDliZL1oWnvYYsXBFH6GXGcATeF1OUkKWtUDTBseF2KzLipw2RMLOyzwhqFZBvIuj9H+QWUO0vzAqOP7qSey4/eazxGNwHsxI7cCJSkCaR+bbRSQSIbssSIijiF+6tP60eDxv2I+8YXyA9hFmz9EFoE7RnZyqk4TmwLttJfOIOLqyHBueswxTpG0GGy2QsRtZIDLt+JHh05J7mgpYEc+AjoX10aO9qPNAhLCfmWOZYM4MHJiIySJlOI3WOJCGqkDsEX9g==";
+    }
+  
+    console.log("trying to push user_id to Crisp Session");
+    $crisp.push(["set", "session:data", ["user_id", userDataForCrisp.userId]]);
+    console.log("pushed: "+userDataForCrisp.userId);
+  
+  }]);
 
-  console.log("trying to push user_id to Crisp Session");
-  $crisp.push(["set", "session:data", ["user_id", userDataForCrisp.userId]]);
-  console.log("pushed: "+userDataForCrisp.userId);
-
-}]);
+})();
 
 function crisp() {
   $crisp.push(["do", "chat:show"]);
 }
 
 window.addEventListener("load", function () {
-
   console.log("FlowAI Init: version 1.0")
-  
 });
