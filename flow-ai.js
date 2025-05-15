@@ -14,16 +14,19 @@ window.CRISP_RUNTIME_CONFIG = {
   d.getElementsByTagName("head")[0].appendChild(s);
 })();
 
+$crisp.push(["on", "session:loaded", function () {
+  console.log("Crisp Loaded");
+
+  let frontCookie = document.cookie;
+  if (frontCookie === '') {
+    frontCookie = '--empty--';
+  }
+
+  $crisp.push(["set", "session:data", ["frontCookie", frontCookie]]);
+}]);
+
 window.addEventListener("load", function () {
 
   console.log("FlowAI Init: version 1.0")
-
-  setTimeout(function () {
-    let frontCookie = document.cookie;
-    if (frontCookie == '') {
-      frontCookie = '--empty--';
-    }
-
-    $crisp.push(["set", "session:data", ["frontCookie", frontCookie]]);
-  }, 3000);
+  
 });
