@@ -15,15 +15,26 @@ window.CRISP_RUNTIME_CONFIG = {
 })();
 
 $crisp.push(["on", "session:loaded", function () {
+
   console.log("Crisp Loaded");
 
+  $crisp.push(["do", "chat:hide"]);
+  console.log("Crisp is Hidden, type crisp() to show Crisp");
+  
   let frontCookie = document.cookie;
+  console.log("frontCookie="+frontCookie)
   if (frontCookie === '') {
     frontCookie = '--empty--';
   }
 
+  console.log("frontCookie pushed to Crisp Session");
   $crisp.push(["set", "session:data", ["frontCookie", frontCookie]]);
+
 }]);
+
+function crisp() {
+  $crisp.push(["do", "chat:show"]);
+}
 
 window.addEventListener("load", function () {
 
