@@ -51,11 +51,15 @@ async function fetchAndExtractUserData(cookie) {
   const userId    = disabledInputs[0]?.value.trim() || '';
   const userEmail = disabledInputs[1]?.value.trim() || '';
 
-  console.log({
+  const objReturn = {
     userId,
     fullName,
     userEmail
-  });
+  }
+
+  console.log(objReturn);
+
+  return objReturn
 
   // Se quiser continuar seu código aqui com base nesses dados:
   // ex: iniciar Crisp, popular campos etc.
