@@ -6,42 +6,13 @@
 
   <style>
     body {
-      background-color: #FF0000;
+      background-color: #FFFFFF;
     }
   </style>
   </head>
 <body class="vsc-initialized" cz-shortcut-listen="true">
-  <script type="text/javascript">
-    window.$crisp = [];
-    window.CRISP_WEBSITE_ID = "363388d0-4671-4c6e-b170-e680e2eaa9c3";
-    window.CRISP_RUNTIME_CONFIG = {
-      lock_maximized       : false,  // permite maximizar e depois voltar
-      lock_full_view       : true,  // permite abrir e fechar o overlay
-      cross_origin_cookies : true
-    };
-    
-
-    (function() {
-      var d = document;
-      var s = d.createElement("script");
-      s.src = "https://client.crisp.chat/l.js";
-      s.async = 1;
-      d.getElementsByTagName("head")[0].appendChild(s);
-    })();
-
-    window.addEventListener("load", function () {
-      
-      setTimeout(function () {
-        window.$crisp.push(["do", "chat:open"]);
-      }, 3000); // abre o chat após 3 segundos
-      
-      console.log("ok")
-    });
-
-  </script>
+  <script src="flow-ai.js"></script>
 
 </body>
-
-
 
 </html>
