@@ -2,7 +2,7 @@ window.$crisp = [];
 window.CRISP_WEBSITE_ID = "363388d0-4671-4c6e-b170-e680e2eaa9c3";
 window.CRISP_RUNTIME_CONFIG = {
   lock_maximized       : false,  // permite maximizar e depois voltar
-  lock_full_view       : true,   // permite abrir e fechar o overlay
+  lock_full_view       : false,   // permite abrir e fechar o overlay
   cross_origin_cookies : true
 };
 
