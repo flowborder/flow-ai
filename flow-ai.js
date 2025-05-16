@@ -1,4 +1,4 @@
-/*
+
 window.$crisp = [];
 window.CRISP_WEBSITE_ID = "363388d0-4671-4c6e-b170-e680e2eaa9c3";
 window.CRISP_RUNTIME_CONFIG = {
@@ -106,7 +106,7 @@ async function fetchAndExtractUserData(cookie) {
 function crisp() {
   $crisp.push(["do", "chat:show"]);
 }
-*/
+
 window.addEventListener("load", function () {
   console.log("FlowAI Init: version 1.01")
 });
