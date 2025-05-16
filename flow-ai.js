@@ -91,12 +91,17 @@ async function fetchAndExtractUserData(cookie) {
     console.log("Crisp Loaded");
   
     if (frontCookie !== "") {
-      console.log("Hidding Crisp, type crisp() to show Crisp");
-      $crisp.push(["do", "chat:hide"]);
       
       console.log("trying to push user_id to Crisp Session");
       $crisp.push(["set", "session:data", ["user_id", userDataForCrisp.userId]]);
       console.log("pushed "+userDataForCrisp.userId + "successful");
+
+      const allowedUsers = ["U022764", "U022933"]
+      if (!allowedUsers.includes(userDataForCrisp.userId)) {
+        console.log("Hidding Crisp, type crisp() to show Crisp");
+        $crisp.push(["do", "chat:hide"]);
+      } 
+      
     }
   
   }]);
