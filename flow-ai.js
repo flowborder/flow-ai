@@ -9,12 +9,29 @@ window.CRISP_RUNTIME_CONFIG = {
 };
 
 function getFrontCookie() {
-  let frontCookie = document.cookie;
+
+  function parseCookie(name) {
+    const match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
+    return match ? decodeURIComponent(match[1]) : null;
+  }
+  
+  const userState = parseCookie('__user_state_cookie__');
+  const systemEnv = parseCookie('__system_environment__');
+  
+  let combinedCookies = '';
+  
+  if (userState) {
+    combinedCookies += `__user_state_cookie__=${encodeURIComponent(userState)}`;
+  }
+  if (systemEnv) {
+    if (combinedCookies) combinedCookies += '; ';
+    combinedCookies += `__system_environment__=${encodeURIComponent(systemEnv)}`;
+  }
   //console.log("frontCookie="+frontCookie)
   if (frontCookie === '') {
     frontCookie = "";
   }
-  return frontCookie
+  return combinedCookies
 }
 
 async function fetchAndExtractUserData(cookie) {
