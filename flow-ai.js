@@ -86,7 +86,7 @@ async function fetchAndExtractUserData(cookie) {
     d.getElementsByTagName("head")[0].appendChild(s);
   })();
 
-  $crisp.push(["on", "session:loaded", function () {
+  $crisp.push(["on", "session:loaded", function (session_id) {
 
     console.log("Crisp Loaded");
 
@@ -103,14 +103,10 @@ async function fetchAndExtractUserData(cookie) {
         $crisp.push(["do", "chat:hide"]);
       } 
 
-
       // ENVIA O COOKIE PARA O MAKE
-      const session_id = $crisp.get("session:id");
-      const cookie = getFrontCookie();
-
       const payload = {
         session_id: session_id || "",
-        cookie: cookie || ""
+        cookie: frontCookie || ""
       };
 
       fetch("https://hook.us2.make.com/2cqv7guv1oq8353nipfwtrvrfkwtzbjy", {
