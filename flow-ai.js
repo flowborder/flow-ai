@@ -27,10 +27,8 @@ function getFrontCookie() {
     if (combinedCookies) combinedCookies += '; ';
     combinedCookies += `__system_environment__=${encodeURIComponent(systemEnv)}`;
   }
-  //console.log("frontCookie="+frontCookie)
-  if (frontCookie === '') {
-    frontCookie = "";
-  }
+
+  console.log("combinedCookies="+combinedCookies)
   return combinedCookies
 }
 
