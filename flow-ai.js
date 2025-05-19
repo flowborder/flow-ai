@@ -10,7 +10,7 @@ window.CRISP_RUNTIME_CONFIG = {
 
 function getFrontCookie() {
   let frontCookie = document.cookie;
-  console.log("frontCookie="+frontCookie)
+  //console.log("frontCookie="+frontCookie)
   if (frontCookie === '') {
     frontCookie = "";
   }
@@ -89,7 +89,8 @@ async function fetchAndExtractUserData(cookie) {
   $crisp.push(["on", "session:loaded", function () {
 
     console.log("Crisp Loaded");
-  
+
+    // PERSISTE A SESSÃO COM BASE NO USER ID DA SUMOOL
     if (frontCookie !== "") {
       
       console.log("trying to push user_id to Crisp Session");
@@ -101,7 +102,27 @@ async function fetchAndExtractUserData(cookie) {
         console.log("Hidding Crisp, type crisp() to show Crisp");
         $crisp.push(["do", "chat:hide"]);
       } 
-      
+
+
+      // ENVIA O COOKIE PARA O MAKE
+      const session_id = $crisp.get("session:id");
+      const cookie = getFrontCookie();
+
+      const payload = {
+        session_id: session_id || "",
+        cookie: cookie || ""
+      };
+
+      fetch("https://hook.us2.make.com/2cqv7guv1oq8353nipfwtrvrfkwtzbjy", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(response => console.log("Webhook Cookie enviado com sucesso"))
+      .catch(error => console.error("Erro ao enviar para o Webhook Cookie:", error));
+    
     }
   
   }]);
