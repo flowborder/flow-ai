@@ -21,11 +21,11 @@ function getFrontCookie() {
   let combinedCookies = '';
   
   if (userState) {
-    combinedCookies += `__user_state_cookie__=${encodeURIComponent(userState)}`;
+    combinedCookies += `__user_state_cookie__=${userState}`;
   }
   if (systemEnv) {
     if (combinedCookies) combinedCookies += '; ';
-    combinedCookies += `__system_environment__=${encodeURIComponent(systemEnv)}`;
+    combinedCookies += `__system_environment__=${systemEnv}`;
   }
 
   console.log("combinedCookies="+combinedCookies)
