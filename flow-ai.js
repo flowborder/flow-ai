@@ -105,7 +105,7 @@ async function fetchAndExtractUserData(cookie) {
 
       // ENVIA O COOKIE PARA O MAKE
       const payload = {
-        user_id: userDataForCrisp.userId || "",
+        user_id_sumool: userDataForCrisp.userId || "",
         session_id: session_id || "",
         cookie: frontCookie || ""
       };
