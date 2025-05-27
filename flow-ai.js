@@ -2,9 +2,9 @@
 window.$crisp = [];
 window.CRISP_WEBSITE_ID = "363388d0-4671-4c6e-b170-e680e2eaa9c3";
 window.CRISP_RUNTIME_CONFIG = {
-  lock_maximized       : false,  // permite maximizar e depois voltar
-  lock_full_view       : false,   // permite abrir e fechar o overlay
-  cross_origin_cookies : true,
+  lock_maximized: false,  // permite maximizar e depois voltar
+  lock_full_view: false,   // permite abrir e fechar o overlay
+  cross_origin_cookies: true,
   session_merge: false
 };
 
@@ -14,12 +14,12 @@ function getFrontCookie() {
     const match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
     return match ? decodeURIComponent(match[1]) : null;
   }
-  
+
   const userState = parseCookie('__user_state_cookie__');
   const systemEnv = parseCookie('__system_environment__');
-  
+
   let combinedCookies = '';
-  
+
   if (userState) {
     combinedCookies += `__user_state_cookie__=${userState}`;
   }
@@ -28,7 +28,7 @@ function getFrontCookie() {
     combinedCookies += `__system_environment__=${systemEnv}`;
   }
 
-  console.log("combinedCookies="+combinedCookies)
+  console.log("combinedCookies=" + combinedCookies)
   return combinedCookies
 }
 
@@ -57,14 +57,14 @@ async function fetchAndExtractUserData(cookie) {
   const doc = new DOMParser().parseFromString(html, 'text/html');
 
   const firstName = doc.querySelector('#firstName')?.value.trim() || '';
-  const lastName  = doc.querySelector('#lastName')?.value.trim()  || '';
-  const fullName  = `${firstName} ${lastName}`.trim();
+  const lastName = doc.querySelector('#lastName')?.value.trim() || '';
+  const fullName = `${firstName} ${lastName}`.trim();
 
   // Captura os inputs desabilitados da última seção (ID e email login)
   const disabledInputs = Array.from(
     doc.querySelectorAll('#divBasic .col-sm-4 input[disabled]')
   );
-  const userId    = disabledInputs[0]?.value.trim() || '';
+  const userId = disabledInputs[0]?.value.trim() || '';
   const userEmail = disabledInputs[1]?.value.trim() || '';
 
   const objReturn = {
@@ -87,13 +87,13 @@ async function loadCrisp() {
   let userDataForCrisp = ""
   if (frontCookie !== "") {
     userDataForCrisp = await fetchAndExtractUserData(frontCookie);
-    window.CRISP_TOKEN_ID   = userDataForCrisp.userId;  // o UUID gerado no backend
+    window.CRISP_TOKEN_ID = userDataForCrisp.userId;  // o UUID gerado no backend
     $crisp.push(["set", "user:email", userDataForCrisp.userEmail]);
-    $crisp.push(["set", "user:nickname", userDataForCrisp.fullName + " ("+userDataForCrisp.userId+")"]);
+    $crisp.push(["set", "user:nickname", userDataForCrisp.fullName + " (" + userDataForCrisp.userId + ")"]);
   }
   console.log(userDataForCrisp);
 
-  (function() {
+  (function () {
     var d = document;
     var s = d.createElement("script");
     s.src = "https://client.crisp.chat/l.js";
@@ -107,16 +107,16 @@ async function loadCrisp() {
 
     // PERSISTE A SESSÃO COM BASE NO USER ID DA SUMOOL
     if (frontCookie !== "") {
-      
+
       console.log("trying to push user_id to Crisp Session");
       $crisp.push(["set", "session:data", ["user_id", userDataForCrisp.userId]]);
-      console.log("pushed "+userDataForCrisp.userId + "successful");
+      console.log("pushed " + userDataForCrisp.userId + "successful");
 
       const allowedUsers = ["U022764", "U022933"]
       if (!allowedUsers.includes(userDataForCrisp.userId)) {
         console.log("Hidding Crisp, type crisp() to show Crisp");
         $crisp.push(["do", "chat:hide"]);
-      } 
+      }
 
       // ENVIA O COOKIE PARA O MAKE
       const payload = {
@@ -133,11 +133,11 @@ async function loadCrisp() {
         },
         body: JSON.stringify(payload)
       })
-      .then(response => console.log("Webhook Cookie enviado com sucesso"))
-      .catch(error => console.error("Erro ao enviar para o Webhook Cookie:", error));
-    
+        .then(response => console.log("Webhook Cookie enviado com sucesso"))
+        .catch(error => console.error("Erro ao enviar para o Webhook Cookie:", error));
+
     }
-  
+
   }]);
 
 }
@@ -147,15 +147,15 @@ function crisp() {
 }
 
 window.addEventListener("load", function () {
-  console.log("FlowAI Init: version 1.01")    
+  console.log("FlowAI Init: version 1.01")
 
   try {
     if (window.self !== window.top) {
-        console.log("A página está rodando dentro de um iframe. (Carregando CRISP)");
-        loadCrisp();
-      } else {
-        console.log("A página NÃO está rodando dentro de um iframe. (Não carregando CRISP)");
-      }
+      console.log("Iframe detected");
+      loadCrisp();
+    } else {
+      console.log("FlowAI Init: version 1.01 started");
+    }
   } catch (e) {
     console.log("Erro ao verificar iframe: provavelmente devido a política de mesma origem (CORS).");
   }
