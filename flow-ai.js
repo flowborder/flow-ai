@@ -147,18 +147,18 @@ function crisp() {
 }
 
 window.addEventListener("load", function () {
-  console.log("FlowAI Init: version 1.01")
+  console.log("[FlowAI] Script injected successfully.");
 
   try {
     if (window.self !== window.top) {
-      console.log("Iframe detected");
+      console.log("[FlowAI] Detected execution within an iframe. Initialization skipped.");
     } else {
-      console.log("FlowAI Init: initializing version 1.02");
+      console.log("[FlowAI] Starting initialization...");
       loadCrisp();
-      console.log("FlowAI Init: starded");
+      console.log("[FlowAI] Initialization completed successfully.");
     }
   } catch (e) {
-    console.log("Erro ao verificar iframe: provavelmente devido a política de mesma origem (CORS).");
+    console.error("[FlowAI] Error while checking iframe context. Possible cross-origin restriction.", e);
   }
-
 });
+
