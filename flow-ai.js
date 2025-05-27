@@ -148,4 +148,13 @@ function crisp() {
 
 window.addEventListener("load", function () {
   console.log("FlowAI Init: version 1.01")
+
+  (function() {
+    if (window.self !== window.top) {
+      console.log("A página está rodando dentro de um iframe.");
+    } else {
+      console.log("A página NÃO está rodando dentro de um iframe.");
+    }
+  })();
+    
 });
