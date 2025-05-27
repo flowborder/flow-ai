@@ -81,7 +81,7 @@ async function fetchAndExtractUserData(cookie) {
   // ex: iniciar Crisp, popular campos etc.
 }
 
-(async function() {
+async function loadCrisp() {
 
   let frontCookie = getFrontCookie()
   let userDataForCrisp = ""
@@ -140,23 +140,24 @@ async function fetchAndExtractUserData(cookie) {
   
   }]);
 
-})();
+}
 
 function crisp() {
   $crisp.push(["do", "chat:show"]);
 }
 
 window.addEventListener("load", function () {
-  console.log("FlowAI Init: version 1.01")
+  console.log("FlowAI Init: version 1.01")    
 
   try {
     if (window.self !== window.top) {
-      console.log("A página está rodando dentro de um iframe.");
-    } else {
-      console.log("A página NÃO está rodando dentro de um iframe.");
-    }
+        console.log("A página está rodando dentro de um iframe. (Carregando CRISP)");
+        loadCrisp();
+      } else {
+        console.log("A página NÃO está rodando dentro de um iframe. (Não carregando CRISP)");
+      }
   } catch (e) {
     console.log("Erro ao verificar iframe: provavelmente devido a política de mesma origem (CORS).");
   }
-    
+
 });
