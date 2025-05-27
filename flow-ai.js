@@ -140,6 +140,27 @@ async function loadCrisp() {
 
   }]);
 
+  $crisp.push(["on", "message:received", function(data) {
+    // Verifica se a mensagem é do bot
+    console.log(data)
+    /*if (inputBlocked && data.origin === 'operator') {
+      
+      // Solução 1: Checa se a mensagem contém a assinatura da resposta final
+      if (data.content.includes("Aqui está o resultado")) {
+        inputBlocked = false;
+        blockInput(false);
+      }
+  
+      // Solução 2 (mais robusta): check metadata (se você conseguir incluir)
+      
+      //if (data.metadata && data.metadata.type === 'final_response') {
+      //  inputBlocked = false;
+      //  blockInput(false);
+      //}
+      
+    }*/
+  }]);
+
 }
 
 function crisp() {
