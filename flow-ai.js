@@ -152,9 +152,10 @@ window.addEventListener("load", function () {
   try {
     if (window.self !== window.top) {
       console.log("Iframe detected");
-      loadCrisp();
     } else {
-      console.log("FlowAI Init: version 1.01 started");
+      console.log("FlowAI Init: initializing version 1.02");
+      loadCrisp();
+      console.log("FlowAI Init: starded");
     }
   } catch (e) {
     console.log("Erro ao verificar iframe: provavelmente devido a política de mesma origem (CORS).");
