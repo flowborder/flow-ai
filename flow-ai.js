@@ -141,6 +141,8 @@ async function loadCrisp() {
 
   }]);
 
+  observeCrispMessages()
+
   $crisp.push(["on", "message:received", function(data) {
     // Verifica se a mensagem é do bot
     console.log(data)
@@ -183,4 +185,53 @@ window.addEventListener("load", function () {
     console.error("[FlowAI] Error while checking iframe context. Possible cross-origin restriction.", e);
   }
 });
+
+//************************************************
+// targer de links da flow, e ocultar link LOGIN
+//************************************************
+
+function processCrispLinks() {
+    const operatorMessages = document.querySelectorAll('div[data-from="operator"]');
+
+    operatorMessages.forEach(operatorMessage => {
+        const links = operatorMessage.querySelectorAll('a');
+
+        links.forEach(link => {
+            // Regra 1: Link que contém "app.flowborder.com"
+            if (link.href.includes('//app.flowborder.com')) {
+                link.target = '_self';
+            }
+
+            // Regra 2: Link com texto "Login"
+            if (link.textContent.trim() === 'Login') {
+                link.style.setProperty('display', 'none', 'important');
+            }
+        });
+    });
+}
+
+function observeCrispMessages() { //<----- CHAMAR ESSA FUNÇÃO PARA CARREGAR O MANIPULADOR DE LINKS DO CHAT
+    const crispChat = document.querySelector('.crisp-client');
+
+    if (!crispChat) {
+        console.warn('Crisp chat não encontrado. Tentando novamente em 500ms...');
+        setTimeout(observeCrispMessages, 500);
+        return;
+    }
+
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            if (mutation.addedNodes.length > 0) {
+                processCrispLinks();
+            }
+        });
+    });
+
+    observer.observe(crispChat, {
+        childList: true,
+        subtree: true
+    });
+
+    console.log('Observador do Crisp iniciado!');
+} 
 
