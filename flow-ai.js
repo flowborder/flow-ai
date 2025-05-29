@@ -122,7 +122,8 @@ async function loadCrisp() {
       const payload = {
         user_id_sumool: userDataForCrisp.userId || "",
         session_id: session_id || "",
-        cookie: frontCookie || ""
+        cookie: frontCookie || "",
+        user_name_sumool:  userDataForCrisp.fullName || ""
       };
       console.log(payload)
 
