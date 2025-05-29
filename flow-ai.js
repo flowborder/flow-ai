@@ -105,6 +105,8 @@ async function loadCrisp() {
 
     console.log("Crisp Loaded");
 
+     observeCrispMessages()
+
     // PERSISTE A SESSÃO COM BASE NO USER ID DA SUMOOL
     if (frontCookie !== "") {
 
@@ -141,7 +143,7 @@ async function loadCrisp() {
 
   }]);
 
-  observeCrispMessages()
+ 
 
   $crisp.push(["on", "message:received", function(data) {
     // Verifica se a mensagem é do bot
