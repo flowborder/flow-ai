@@ -214,6 +214,7 @@ function addAboutUsMenu() {
               <a href="https://drive.google.com/open?id=1L3Qv3gB0tqUBD83dqc6C_a_8jcWE6gO6&usp=drive_fs" target="_blank" class="">
                   <i class="bi bi-check"></i><span>About Us</span>
               </a>
+              <img src="/ClientContent/images/useepay_cards.jpeg" style="width: 100%">
           `;
           
           // Adicione o novo li ao final da lista
