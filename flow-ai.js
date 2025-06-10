@@ -179,6 +179,9 @@ window.addEventListener("load", function () {
     if (window.self !== window.top) {
       console.log("[FlowAI] Detected execution within an iframe. Initialization skipped.");
     } else {
+
+      addAboutUsMenu();
+      
       console.log("[FlowAI] Starting initialization...");
       loadCrisp();
       console.log("[FlowAI] Initialization completed successfully.");
@@ -189,7 +192,7 @@ window.addEventListener("load", function () {
 
   // add About Us
 
-  addAboutUsMenu();
+  
   
 });
 
