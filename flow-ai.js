@@ -186,7 +186,38 @@ window.addEventListener("load", function () {
   } catch (e) {
     console.error("[FlowAI] Error while checking iframe context. Possible cross-origin restriction.", e);
   }
+
+  // add About Us
+
+  addAboutUsMenu();
+  
 });
+
+function addAboutUsMenu() {
+  const sidebarMenu = document.getElementById('sidebar-menu');
+    
+  // Verifique se a div existe
+  if (sidebarMenu) {
+      // Encontre o primeiro ul dentro da sidebar-menu
+      const ulElement = sidebarMenu.querySelector('ul');
+      
+      // Verifique se o ul existe
+      if (ulElement) {
+          // Crie o novo elemento li
+          const newLi = document.createElement('li');
+          
+          // Defina o conteúdo HTML do novo li
+          newLi.innerHTML = `
+              <a href="https://drive.google.com/open?id=1L3Qv3gB0tqUBD83dqc6C_a_8jcWE6gO6&usp=drive_fs" target="_blank" class="">
+                  <i class="bi bi-check"></i><span>About Us</span>
+              </a>
+          `;
+          
+          // Adicione o novo li ao final da lista
+          ulElement.appendChild(newLi);
+      }
+  }
+}
 
 //************************************************
 // targer de links da flow, e ocultar link LOGIN
