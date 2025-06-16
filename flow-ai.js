@@ -175,6 +175,9 @@ function crisp() {
 }
 
 window.addEventListener("load", function () {
+
+  esconderDivUseePay()
+  
   console.log("[FlowAI] Script injected successfully.");
 
   try {
@@ -276,6 +279,7 @@ function observeCrispMessages() { //<----- CHAMAR ESSA FUNÇÃO PARA CARREGAR O 
 
 function esconderDivUseePay() {
   try {
+    console.log("hidding UseePay")
     const targetSrc = "/ClientContent/images/Billing/useepay.png";
     const images = document.querySelectorAll(`img[src="${targetSrc}"]`);
 
