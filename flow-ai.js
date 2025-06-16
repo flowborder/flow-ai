@@ -114,7 +114,13 @@ async function loadCrisp() {
       $crisp.push(["set", "session:data", ["user_id", userDataForCrisp.userId]]);
       console.log("pushed " + userDataForCrisp.userId + "successful");
 
-      const allowedUsers = ["U022764", "U022933", "U022992"]
+
+      //guicortei@gmail.com -> U022764
+      //maluco@maluco.com -> U022933
+      //flowborder@flowborder.com -> U022992
+      //ccc@qq.com -> U000001 (login dos devs china)
+      
+      const allowedUsers = ["U022764", "U022933", "U022992", "U000001"]
       if (!allowedUsers.includes(userDataForCrisp.userId)) {
         console.log("Hidding Crisp, type crisp() to show Crisp");
         $crisp.push(["do", "chat:hide"]);
