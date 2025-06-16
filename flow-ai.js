@@ -118,6 +118,8 @@ async function loadCrisp() {
       if (!allowedUsers.includes(userDataForCrisp.userId)) {
         console.log("Hidding Crisp, type crisp() to show Crisp");
         $crisp.push(["do", "chat:hide"]);
+
+        esconderDivComImagem() // esconder UseePay
       }
 
       // ENVIA O COOKIE PARA O MAKE
@@ -272,3 +274,14 @@ function observeCrispMessages() { //<----- CHAMAR ESSA FUNÇÃO PARA CARREGAR O 
     console.log('Observador do Crisp iniciado!');
 } 
 
+function esconderDivComImagem() {
+  const targetSrc = "/ClientContent/images/Billing/useepay.png";
+  const images = document.querySelectorAll(`img[src="${targetSrc}"]`);
+
+  images.forEach(img => {
+    const div = img.closest("div");
+    if (div) {
+      div.style.display = "none";
+    }
+  });
+}
