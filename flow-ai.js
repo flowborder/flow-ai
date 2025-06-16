@@ -118,8 +118,8 @@ async function loadCrisp() {
       if (!allowedUsers.includes(userDataForCrisp.userId)) {
         console.log("Hidding Crisp, type crisp() to show Crisp");
         $crisp.push(["do", "chat:hide"]);
-
-        esconderDivUseePay() // esconder UseePay
+      } else {
+        HideShowDivUseePay("show")
       }
 
       // ENVIA O COOKIE PARA O MAKE
@@ -176,7 +176,7 @@ function crisp() {
 
 window.addEventListener("load", function () {
 
-  esconderDivUseePay()
+  HideShowDivUseePay("hide")
   
   console.log("[FlowAI] Script injected successfully.");
 
@@ -277,20 +277,26 @@ function observeCrispMessages() { //<----- CHAMAR ESSA FUNÇÃO PARA CARREGAR O 
     console.log('Observador do Crisp iniciado!');
 } 
 
-function esconderDivUseePay() {
+function HideShowDivUseePay(acao) {
   try {
-    console.log("hidding UseePay")
     const targetSrc = "/ClientContent/images/Billing/useepay.png";
     const images = document.querySelectorAll(`img[src="${targetSrc}"]`);
 
     images.forEach(img => {
       const div = img.closest("div");
       if (div) {
-        div.style.display = "none";
+        if (acao === "hide") {
+          div.style.display = "none";
+        } else if (acao === "show") {
+          div.style.display = "";
+        } else {
+          console.warn("Ação inválida! Use 'hide' ou 'show'.");
+        }
       }
     });
   } catch (error) {
-    console.error("Erro ao tentar esconder a div com a imagem:", error);
+    console.error("Erro ao tentar alterar a visibilidade da div com a imagem:", error);
   }
 }
+
 
