@@ -81,16 +81,34 @@ async function fetchAndExtractUserData(cookie) {
   // ex: iniciar Crisp, popular campos etc.
 }
 
+function extractUserDataFromMeta() {
+  const getMetaValue = (name) =>
+    document.querySelector(`meta[name="${name}"]`)?.getAttribute('value') || '';
+
+  const userId = getMetaValue('CRISP_EnterpriseCode');
+  const userEmail = getMetaValue('CRISP_UserEmail');
+  const fullName = getMetaValue('CRISP_UserName');
+
+  const objReturn = {
+    userId,
+    fullName,
+    userEmail
+  };
+
+  console.log(objReturn);
+  return objReturn;
+}
+
 async function loadCrisp() {
 
   let frontCookie = getFrontCookie()
   let userDataForCrisp = ""
-  if (frontCookie !== "") {
-    userDataForCrisp = await fetchAndExtractUserData(frontCookie);
+  //if (frontCookie !== "") {
+    userDataForCrisp = extractUserDataFromMeta();
     window.CRISP_TOKEN_ID = userDataForCrisp.userId;  // o UUID gerado no backend
     $crisp.push(["set", "user:email", userDataForCrisp.userEmail]);
     $crisp.push(["set", "user:nickname", userDataForCrisp.fullName + " (" + userDataForCrisp.userId + ")"]);
-  }
+  //}
   console.log(userDataForCrisp);
 
   (function () {
