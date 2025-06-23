@@ -200,7 +200,7 @@ function crisp() {
 
 window.addEventListener("load", function () {
 
-  HideShowDivUseePay("hide")
+  
   
   console.log("[FlowAI] Script injected successfully.");
 
@@ -210,6 +210,8 @@ window.addEventListener("load", function () {
     } else {
 
       addAboutUsMenu();
+      enableFloatingPendingPayment();
+      HideShowDivUseePay("hide")
       
       console.log("[FlowAI] Starting initialization...");
       loadCrisp();
@@ -322,3 +324,75 @@ function HideShowDivUseePay(acao) {
     console.error("Erro ao tentar alterar a visibilidade da div com a imagem:", error);
   }
 }
+
+function enableFloatingPendingPayment() {
+  if (window.location.href !== "https://app.flowborder.com/CustomOrder/Pending") return;
+
+  const container = document.getElementById("divFollowButtons");
+  if (!container) {
+    console.error("Elemento #divFollowButtons não encontrado.");
+    return;
+  }
+
+  const cloneH5 = document.createElement("div");
+  cloneH5.id = "cloned-h5";
+  cloneH5.style.transform = "scale(0.9)";
+  cloneH5.style.transformOrigin = "top left";
+  cloneH5.style.display = "none";
+  cloneH5.style.display = "inline-block";
+
+  const cloneSpanContainer = document.createElement("div");
+  cloneSpanContainer.id = "cloned-span-container";
+  cloneSpanContainer.style.display = "none";
+  cloneSpanContainer.style.display = "inline-block";
+
+  container.appendChild(cloneH5);
+  container.appendChild(cloneSpanContainer);
+
+  function sincronizar(selector, target, onCloneReady) {
+    const original = document.querySelector(selector);
+    if (!original) {
+      console.warn(`Elemento ${selector} não encontrado.`);
+      return;
+    }
+
+    const update = () => {
+      const clone = original.cloneNode(true);
+      if (typeof onCloneReady === 'function') onCloneReady(clone);
+      target.innerHTML = '';
+      target.appendChild(clone);
+    };
+
+    update();
+
+    const observer = new MutationObserver(update);
+    observer.observe(original, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      characterData: true,
+    });
+  }
+
+  sincronizar(
+    "#wrapper > div.content-page > div > div.page-content-wrapper > div > section > div:nth-child(3) > div:nth-child(2) > div > div:nth-child(3) > div > div > div > div.col-8.text-right.align-self-center > div > h5",
+    cloneH5
+  );
+
+  sincronizar("#spSelectedOrderNum", cloneSpanContainer, (clonedSpan) => {
+    clonedSpan.style.marginTop = "-14px";
+  });
+
+  const toggleDisplay = () => {
+    const visivel = container.classList.contains("buttons-follow");
+    const display = visivel ? "inline-block" : "none";
+    cloneH5.style.display = display;
+    cloneSpanContainer.style.display = display;
+  };
+
+  const classObserver = new MutationObserver(toggleDisplay);
+  classObserver.observe(container, { attributes: true, attributeFilter: ["class"] });
+
+  toggleDisplay();
+}
+
