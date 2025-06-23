@@ -209,9 +209,9 @@ window.addEventListener("load", function () {
       console.log("[FlowAI] Detected execution within an iframe. Initialization skipped.");
     } else {
 
+      HideShowDivUseePay("hide")
       addAboutUsMenu();
       enableFloatingPendingPayment();
-      HideShowDivUseePay("hide")
       
       console.log("[FlowAI] Starting initialization...");
       loadCrisp();
