@@ -110,7 +110,7 @@ function extractUserDataFromMeta() {
     fullName,
     userEmail,
     stripeSubscriptionId,
-    flowtoken
+    flowToken
   };
 
   console.log(objReturn);
