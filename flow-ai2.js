@@ -99,17 +99,19 @@ function extractUserDataFromMeta() {
   const getMetaValue = (name) =>
     document.querySelector(`meta[name="${name}"]`)?.getAttribute('value') || '';
 
-  const userId = getMetaValue('CRISP_EnterpriseCode');
-  const userEmail = getMetaValue('CRISP_UserEmail');
-  const fullName = getMetaValue('CRISP_UserName');
-  const stripeSubscriptionId = getMetaValue('STRIPE_SubscriptionID');
-  const flowToken = getMetaValue('FLOWTOKEN');
+  const userId = getMetaValue('FLOW_EnterpriseCode');
+  const userEmail = getMetaValue('FLOW_UserEmail');
+  const fullName = getMetaValue('FLOW_UserName');
+  const stripeSubscriptionId = getMetaValue('FLOW_SubscriptionId');
+  const catalogId = getMetaValue('FLOW_CatalogId');
+  const flowToken = getMetaValue('FLOW_Token');
 
   const objReturn = {
     userId,
     fullName,
     userEmail,
     stripeSubscriptionId,
+    catalogId,
     flowToken
   };
 
