@@ -8,6 +8,10 @@ window.CRISP_RUNTIME_CONFIG = {
   session_merge: false
 };
 
+//************************************************
+// CAPTURA O COOKIE ARMAZENADO NO BROWSER
+//************************************************
+
 function getFrontCookie() {
 
   function parseCookie(name) {
@@ -31,6 +35,12 @@ function getFrontCookie() {
   console.log("combinedCookies=" + combinedCookies)
   return combinedCookies
 }
+
+//************************************************
+//  DESCOBRIR ENTERPRISE_CODE e EMAIL com Fetch na página de SETTINGS
+//
+//  [⚠️ NÃO USADO MAIS] -> Substituido por MetaTags vindas do Layout padrão
+//************************************************
 
 async function fetchAndExtractUserData(cookie) {
   const url = 'https://app.flowborder.com/CustomSetting/Index';
@@ -81,6 +91,10 @@ async function fetchAndExtractUserData(cookie) {
   // ex: iniciar Crisp, popular campos etc.
 }
 
+//************************************************
+//  LÊ AS METATAGS E MONTA UM JSON
+//************************************************
+
 function extractUserDataFromMeta() {
   const getMetaValue = (name) =>
     document.querySelector(`meta[name="${name}"]`)?.getAttribute('value') || '';
@@ -88,16 +102,26 @@ function extractUserDataFromMeta() {
   const userId = getMetaValue('CRISP_EnterpriseCode');
   const userEmail = getMetaValue('CRISP_UserEmail');
   const fullName = getMetaValue('CRISP_UserName');
+  const stripeSubscriptionId = getMetaValue('STRIPE_SubscriptionID');
+  const flowToken = getMetaValue('FLOWTOKEN');
 
   const objReturn = {
     userId,
     fullName,
-    userEmail
+    userEmail,
+    stripeSubscriptionId,
+    flowtoken
   };
 
   console.log(objReturn);
   return objReturn;
 }
+
+//************************************************
+//  CARREGAR CRISP
+//************************************************
+
+const CRISP_allowedUsers = ["U022764", "U022933", "U022992", "U000001", "U023094"]
 
 async function loadCrisp() {
 
@@ -138,8 +162,7 @@ async function loadCrisp() {
       //flowborder@flowborder.com -> U022992
       //ccc@qq.com -> U000001 (login dos devs china)
       
-      const allowedUsers = ["U022764", "U022933", "U022992", "U000001"]
-      if (!allowedUsers.includes(userDataForCrisp.userId)) {
+      if (!CRISP_allowedUsers.includes(userDataForCrisp.userId)) {
         console.log("Hidding Crisp, type crisp() to show Crisp");
         $crisp.push(["do", "chat:hide"]);
       } else {
@@ -169,63 +192,19 @@ async function loadCrisp() {
 
   }]);
 
- 
-
-  $crisp.push(["on", "message:received", function(data) {
-    // Verifica se a mensagem é do bot
-    console.log(data)
-    /*if (inputBlocked && data.origin === 'operator') {
-      
-      // Solução 1: Checa se a mensagem contém a assinatura da resposta final
-      if (data.content.includes("Aqui está o resultado")) {
-        inputBlocked = false;
-        blockInput(false);
-      }
-  
-      // Solução 2 (mais robusta): check metadata (se você conseguir incluir)
-      
-      //if (data.metadata && data.metadata.type === 'final_response') {
-      //  inputBlocked = false;
-      //  blockInput(false);
-      //}
-      
-    }*/
-  }]);
-
 }
+
+//************************************************
+//  FUNÇÃO PARA RODAR NO CONSOLE E MOSTRAR O CHAT PARA QUALQUER USUÁRIO
+//************************************************
 
 function crisp() {
   $crisp.push(["do", "chat:show"]);
 }
 
-window.addEventListener("load", function () {
-
-  
-  
-  console.log("[FlowAI] Script injected successfully.");
-
-  try {
-    if (window.self !== window.top) {
-      console.log("[FlowAI] Detected execution within an iframe. Initialization skipped.");
-    } else {
-
-      HideShowDivUseePay("hide")
-      addAboutUsMenu();
-      enableFloatingPendingPayment();
-      
-      console.log("[FlowAI] Starting initialization...");
-      loadCrisp();
-      console.log("[FlowAI] Initialization completed successfully.");
-    }
-  } catch (e) {
-    console.error("[FlowAI] Error while checking iframe context. Possible cross-origin restriction.", e);
-  }
-
-  // add About Us
-
-  
-  
-});
+//************************************************
+// Menu ABOUT US
+//************************************************
 
 function addAboutUsMenu() {
   const sidebarMenu = document.getElementById('sidebar-menu');
@@ -255,7 +234,7 @@ function addAboutUsMenu() {
 }
 
 //************************************************
-// targer de links da flow, e ocultar link LOGIN
+// target parent para links da flow no Chat, e ocultar balão [LOGIN] nas mensagens com link no Chat
 //************************************************
 
 function processCrispLinks() {
@@ -303,6 +282,10 @@ function observeCrispMessages() { //<----- CHAMAR ESSA FUNÇÃO PARA CARREGAR O 
     console.log('Observador do Crisp iniciado!');
 } 
 
+//************************************************
+// OCULTAR/MOSTRAR BOTAO DA USEEPAY
+//************************************************
+
 function HideShowDivUseePay(acao) {
   try {
     const targetSrc = "/ClientContent/images/Billing/useepay.png";
@@ -324,6 +307,10 @@ function HideShowDivUseePay(acao) {
     console.error("Erro ao tentar alterar a visibilidade da div com a imagem:", error);
   }
 }
+
+//************************************************
+// ADICIONAR PREÇO E QUANTIDADE NO FLOATING MENU DA PÁGINA DE PEDIDOS
+//************************************************
 
 function enableFloatingPendingPayment() {
   if (window.location.href !== "https://app.flowborder.com/CustomOrder/Pending") return;
@@ -396,3 +383,37 @@ function enableFloatingPendingPayment() {
   toggleDisplay();
 }
 
+
+
+
+
+//************************************************
+//************************************************
+//    🔴🔴🔴🔴🔴  EVENTO ON LOAD  🔴🔴🔴🔴🔴
+//************************************************
+//************************************************
+
+window.addEventListener("load", function () {
+
+  console.log("[FlowAI] Script injected successfully.");
+
+  try {
+    if (window.self !== window.top) {
+      console.log("[FlowAI] Detected execution within an iframe. Initialization skipped.");
+    } else {
+
+      HideShowDivUseePay("hide")
+      addAboutUsMenu();
+      enableFloatingPendingPayment();
+      
+      console.log("[FlowAI] Starting initialization...");
+      loadCrisp();
+      console.log("[FlowAI] Initialization completed successfully.");
+    }
+  } catch (e) {
+    console.error("[FlowAI] Error while checking iframe context. Possible cross-origin restriction.", e);
+  }
+
+  // add About Us
+  
+});
