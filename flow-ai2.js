@@ -650,7 +650,7 @@ window.addEventListener("load", function () {
       HideShowDivUseePay("hide")
       addAboutUsMenu();
       enableFloatingPendingPayment();
-      substituirHrefBotaoPDF()
+      //substituirHrefBotaoPDF()
       
       console.log("[FlowAI] Starting initialization...");
       loadCrisp();
