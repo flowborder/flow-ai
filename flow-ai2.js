@@ -523,7 +523,7 @@ Email: info@azurelimited.online`,
   if (base64Logo) {
     const originalWidth = 179;
     const originalHeight = 96;
-    const scaleFactor = 1.5;
+    const scaleFactor = 0.95;
     const widthMM = (originalWidth * 0.2646) * scaleFactor;
     const heightMM = (originalHeight * 0.2646) * scaleFactor;
     doc.addImage(base64Logo, 'PNG', 120, 10, widthMM, heightMM);
