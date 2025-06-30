@@ -664,7 +664,7 @@ function adicionarBotaoDropdownAssinatura() {
       <i class="bi bi-chevron-down mobile-style"></i>
     </a>
     <div class="dropdown-menu dropdown-menu-right language-switch falg-dropdown-menu">
-      <a class="dropdown-item" id="btn-assinar-agora" href="https://seulinkdecheckout.com" target="_blank">Assinar agora</a>
+      <a class="dropdown-item" id="btn-assinar-agora" href="https://seulinkdecheckout.com" target="_blank">Comparar planos</a>
       <a class="dropdown-item" id="link-ativar-assinatura" style="cursor:pointer;">Ativar assinatura</a>
       <a class="dropdown-item" id="btn-gerenciar-assinatura" ${subId ? `href="${gerenciarLink}" target="_blank"` : 'style="pointer-events:none;opacity:0.5;cursor:not-allowed;"'}>Gerenciar assinaturas</a>
     </div>
