@@ -626,6 +626,233 @@ function substituirHrefBotaoPDF() {
   links[0].setAttribute("href", "javascript:generateFlowBorderPDF()");
 }
 
+//************************************************
+//************************************************
+//     🟢🟢🟢🟢🟢  BOTÃO ASSINATURA
+//************************************************
+//************************************************
+
+function adicionarBotaoDropdownAssinatura() {
+
+  userDataForCrisp = extractUserDataFromMeta();
+  if (!CRISP_allowedUsers.includes(userDataForCrisp.userId)) {
+    return true
+  } // escapa da função em caso de não for um usuário da lista
+
+  const ul = document.querySelector('#page-topbar .navbar-custom .list-inline');
+  if (!ul) return console.error("Elemento UL não encontrado.");
+
+  const remarksMeta = document.querySelector('meta[name="FLOW_Remarks"]');
+  let subscriptionStatus = null;
+  let subId = "";
+  try {
+    if (remarksMeta?.getAttribute('value')) {
+      const remarks = JSON.parse(remarksMeta.getAttribute('value'));
+      subscriptionStatus = remarks.subscriptionStatus;
+      subId = remarks.subscriptionId || "";
+    }
+  } catch (e) {}
+
+  const gerenciarLink = `https://hook.us2.make.com/klicy5fzi9cmphqgnwn44ho1llzzgr52?sub_id=${encodeURIComponent(subId)}`;
+
+  const li = document.createElement('li');
+  li.className = 'list-inline-item dropdown notification-list';
+
+  li.innerHTML = `
+    <a class="btn btn-falg-bg dropdown-toggle arrow-none mr-2 align-baseline" data-toggle="dropdown" aria-expanded="false" style="cursor:pointer;">
+      <span>Assinatura</span>
+      <i class="bi bi-chevron-down mobile-style"></i>
+    </a>
+    <div class="dropdown-menu dropdown-menu-right language-switch falg-dropdown-menu">
+      <a class="dropdown-item" id="btn-assinar-agora" href="https://seulinkdecheckout.com" target="_blank">Assinar agora</a>
+      <a class="dropdown-item" id="link-ativar-assinatura" style="cursor:pointer;">Ativar assinatura</a>
+      <a class="dropdown-item" id="btn-gerenciar-assinatura" ${subId ? `href="${gerenciarLink}" target="_blank"` : 'style="pointer-events:none;opacity:0.5;cursor:not-allowed;"'}>Gerenciar assinaturas</a>
+    </div>
+  `;
+
+  ul.insertBefore(li, ul.querySelector('li'));
+
+  // Aplica lógica de status da assinatura
+  const linkAssinar = document.getElementById('btn-assinar-agora');
+  const ativar = document.getElementById('link-ativar-assinatura');
+  const gerenciar = document.getElementById('btn-gerenciar-assinatura');
+
+  if (subscriptionStatus === 'active') {
+    if (linkAssinar) linkAssinar.style.display = 'none';
+    if (ativar) {
+      ativar.textContent = 'Assinatura ativada';
+      ativar.style.pointerEvents = 'none';
+      ativar.style.opacity = '0.5';
+    }
+  }
+
+  if (!subId && gerenciar) {
+    gerenciar.removeAttribute('href');
+    gerenciar.style.pointerEvents = 'none';
+    gerenciar.style.opacity = '0.5';
+    gerenciar.style.cursor = 'not-allowed';
+  }
+
+  // Modal de ativação
+  if (!document.querySelector('#modal-ativar-assinatura')) {
+    const modal = document.createElement('div');
+    modal.id = 'modal-ativar-assinatura';
+    modal.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      ">
+        <div style="
+          background: white;
+          padding: 20px 30px;
+          border-radius: 8px;
+          max-width: 400px;
+          width: 100%;
+          box-shadow: 0 0 20px rgba(0,0,0,0.3);
+          position: relative;
+          font-family: Arial, sans-serif;
+        ">
+          <button id="fechar-modal" style="
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+          ">&times;</button>
+          <div id="conteudo-modal">
+            <h3 style="margin-top: 0;">Ativar Assinatura</h3>
+            <input type="text" id="codigo-ativacao" placeholder="Digite seu código" style="
+              width: 100%;
+              padding: 10px;
+              margin-bottom: 10px;
+              border: 1px solid #ccc;
+              border-radius: 4px;
+              font-size: 16px;
+            " />
+            <button id="botao-enviar-codigo" style="
+              width: 100%;
+              background-color: #007bff;
+              color: white;
+              padding: 10px;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+              font-size: 16px;
+            ">Ativar</button>
+            <div id="resultado-request" style="margin-top: 15px; font-size: 14px;"></div>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  // Carrega o ícone do FontAwesome dinamicamente
+  const faLink = document.createElement('link');
+  faLink.rel = 'stylesheet';
+  faLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+  document.head.appendChild(faLink);
+
+  let modalAberto = false;
+  let respostaPendente = null;
+
+  document.getElementById('link-ativar-assinatura').onclick = abrirModalAtivacao;
+
+  function abrirModalAtivacao() {
+    const modal = document.querySelector('#modal-ativar-assinatura > div');
+    modal.style.display = 'flex';
+    modalAberto = true;
+    respostaPendente = null;
+
+    const fechar = document.getElementById('fechar-modal');
+    fechar.onclick = () => {
+      modal.style.display = 'none';
+      modalAberto = false;
+    };
+
+    const btnAtivar = document.getElementById('botao-enviar-codigo');
+    const input = document.getElementById('codigo-ativacao');
+    const resultado = document.getElementById('resultado-request');
+
+    resultado.textContent = '';
+
+    btnAtivar.onclick = () => {
+      const codigo = input.value.trim();
+      if (!codigo) {
+        resultado.innerHTML = `<span style="color: red;">Por favor, insira um código.</span>`;
+        return;
+      }
+
+      btnAtivar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando...';
+      btnAtivar.disabled = true;
+      input.disabled = true;
+      resultado.innerHTML = '';
+
+      const token = document.querySelector('meta[name="FLOW_Token"]')?.getAttribute('value');
+      const enterpriseCode = document.querySelector('meta[name="FLOW_EnterpriseCode"]')?.getAttribute('value');
+
+      fetch(`https://app.flowborder.com/api/subscriptions/activation/${enterpriseCode}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ subscriptionId: codigo })
+      })
+        .then(res => res.json().then(data => ({ status: res.status, data })))
+        .then(({ status, data }) => {
+          if (status === 200 && data.status === 'success') {
+            resultado.innerHTML = `
+              <div style="margin-top: 20px;">
+                <h4>✅ Assinatura ativada com sucesso.</h4>
+                <p>Refaça seu login para liberar os novos recursos.</p>
+                <a href="https://app.flowborder.com/login/login.html" class="btn btn-success" style="margin-top: 10px;">Refazer login</a>
+              </div>`;
+          } else {
+            throw new Error();
+          }
+        })
+        .catch(() => {
+          resultado.innerHTML = `
+            <div style="color: red;">
+              ❌ Falha na ativação da assinatura.<br>
+              Tente novamente. Se o erro persistir, entre em contato com o suporte.
+            </div>`;
+        })
+        .finally(() => {
+          btnAtivar.innerHTML = 'Ativar';
+          btnAtivar.disabled = false;
+          input.disabled = false;
+        });
+    };
+  }
+
+  const observer = new MutationObserver(() => {
+    if (!modalAberto && respostaPendente) {
+      const modal = document.querySelector('#modal-ativar-assinatura > div');
+      const resultado = document.getElementById('resultado-request');
+      modal.style.display = 'flex';
+      resultado.innerHTML = respostaPendente;
+      respostaPendente = null;
+      modalAberto = true;
+    }
+  });
+
+  observer.observe(document.getElementById('modal-ativar-assinatura'), {
+    attributes: true,
+    childList: true,
+    subtree: true,
+  });
+}
+
+
 
 //************************************************
 //************************************************
@@ -646,6 +873,8 @@ window.addEventListener("load", function () {
       addAboutUsMenu();
       enableFloatingPendingPayment();
       //substituirHrefBotaoPDF()
+      adicionarBotaoDropdownAssinatura();
+
       
       console.log("[FlowAI] Starting initialization...");
       loadCrisp();
