@@ -653,7 +653,7 @@ function adicionarBotaoDropdownAssinatura() {
     }
   } catch (e) {}
 
-  const gerenciarLink = `https://https://app.flowborder.com/api/subscriptions/manage?subscription_id=${encodeURIComponent(subId)}`;
+  const gerenciarLink = `https://app.flowborder.com/api/subscriptions/manage?subscription_id=${encodeURIComponent(subId)}`;
 
   const li = document.createElement('li');
   li.className = 'list-inline-item dropdown notification-list';
