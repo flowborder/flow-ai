@@ -106,13 +106,26 @@ function extractUserDataFromMeta() {
   const catalogId = getMetaValue('FLOW_CatalogId');
   const flowToken = getMetaValue('FLOW_Token');
 
+  // Novo: extrair e validar FLOW_Remarks
+  let remarksRaw = getMetaValue('FLOW_Remarks');
+  let remarks = {};
+  try {
+    if (remarksRaw.trim()) {
+      remarks = JSON.parse(remarksRaw);
+    }
+  } catch (e) {
+    console.warn("❌ Erro ao parsear FLOW_Remarks:", e);
+    remarks = {};
+  }
+
   const objReturn = {
     userId,
     fullName,
     userEmail,
     stripeSubscriptionId,
     catalogId,
-    flowToken
+    flowToken,
+    remarks
   };
 
   console.log(objReturn);
@@ -126,6 +139,7 @@ function extractUserDataFromMeta() {
 const CRISP_allowedUsers = ["U022764", "U022933", "U022992", "U000001", "U023094"]
 
 async function loadCrisp() {
+  console.log("[Flow] Starting CRISP.");
 
   let frontCookie = getFrontCookie()
   let userDataForCrisp = ""
@@ -164,12 +178,12 @@ async function loadCrisp() {
       //flowborder@flowborder.com -> U022992
       //ccc@qq.com -> U000001 (login dos devs china)
       
-      if (!CRISP_allowedUsers.includes(userDataForCrisp.userId)) {
-        console.log("Hidding Crisp, type crisp() to show Crisp");
-        $crisp.push(["do", "chat:hide"]);
-      } else {
-        HideShowDivUseePay("show")
-      }
+      // if (!CRISP_allowedUsers.includes(userDataForCrisp.userId)) {
+      //   console.log("Hidding Crisp, type crisp() to show Crisp");
+      //   $crisp.push(["do", "chat:hide"]);
+      // } else {
+      //   HideShowDivUseePay("show")
+      // }
 
       // ENVIA O COOKIE PARA O MAKE
       const payload = {
@@ -289,6 +303,7 @@ function observeCrispMessages() { //<----- CHAMAR ESSA FUNÇÃO PARA CARREGAR O 
 //************************************************
 
 function HideShowDivUseePay(acao) {
+  console.log("[Useepay] Initialization: " +acao);
   try {
     const targetSrc = "/ClientContent/images/Billing/useepay.png";
     const images = document.querySelectorAll(`img[src="${targetSrc}"]`);
@@ -633,11 +648,9 @@ function substituirHrefBotaoPDF() {
 //************************************************
 
 function adicionarBotaoDropdownAssinatura() {
+  console.log("[Flow] Starting subscriptions.");
 
   userDataForCrisp = extractUserDataFromMeta();
-  if (!CRISP_allowedUsers.includes(userDataForCrisp.userId)) {
-    return true
-  } // escapa da função em caso de não for um usuário da lista
 
   const ul = document.querySelector('#page-topbar .navbar-custom .list-inline');
   if (!ul) return console.error("Elemento UL não encontrado.");
@@ -860,25 +873,34 @@ function adicionarBotaoDropdownAssinatura() {
 //************************************************
 //************************************************
 
+const TEST_users = ["U022764", "U022933", "U022992", "U000001", "U023094"]
+
 window.addEventListener("load", function () {
 
   console.log("[FlowAI] Script injected successfully.");
 
   try {
     if (window.self !== window.top) {
-      console.log("[FlowAI] Detected execution within an iframe. Initialization skipped.");
+      console.log("[Flow] Detected execution within an iframe. AddOns skipped.");
     } else {
 
-      HideShowDivUseePay("hide")
+      console.log("[Flow] Starting initialization...");
       addAboutUsMenu();
       enableFloatingPendingPayment();
-      //substituirHrefBotaoPDF()
-      adicionarBotaoDropdownAssinatura();
 
+      // ---- funções em teste --------
+      userData = extractUserDataFromMeta();
       
-      console.log("[FlowAI] Starting initialization...");
-      loadCrisp();
-      console.log("[FlowAI] Initialization completed successfully.");
+      if (TEST_users.includes(userData.userId)) {
+        HideShowDivUseePay("show")
+        adicionarBotaoDropdownAssinatura();
+        loadCrisp();
+        //substituirHrefBotaoPDF()
+      } else {
+        HideShowDivUseePay("hide")
+      }
+      // -------------------------------
+
     }
   } catch (e) {
     console.error("[FlowAI] Error while checking iframe context. Possible cross-origin restriction.", e);
