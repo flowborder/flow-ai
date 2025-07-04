@@ -901,6 +901,10 @@ window.addEventListener("load", function () {
       }
       // -------------------------------
 
+      if (userData?.remarks?.chat_bot === true) {
+        loadCrisp();
+      }
+
     }
   } catch (e) {
     console.error("[FlowAI] Error while checking iframe context. Possible cross-origin restriction.", e);
