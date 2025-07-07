@@ -680,7 +680,7 @@ function alterarEstiloDoCrisp() {
     element3.style.setProperty('display', 'none', 'important');
   }
 
-  const xpath33 = '//*[@id="crisp-chatbox"]/div/div/div[1]/div/div';
+  const xpath33 = '//*[@id="crisp-chatbox"]/div/div/div[1]/div';
   const result33 = document.evaluate(xpath33, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
   const element33 = result33.singleNodeValue;
   if (element33) {
