@@ -691,7 +691,7 @@ function alterarEstiloDoCrisp() {
   const result333 = document.evaluate(xpath333, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
   const element333 = result333.singleNodeValue;
   if (element333) {
-    element33.innerHTML = '';
+    element333.innerHTML = '';
   }
 
   // ------------ altura do chat (100vh - 150px)
