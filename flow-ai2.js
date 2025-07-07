@@ -162,6 +162,7 @@ async function loadCrisp() {
 
     $crisp.push(["set", "user:email", userDataForCrisp.userEmail]);
     $crisp.push(["set", "user:nickname", userDataForCrisp.fullName + " (" + userDataForCrisp.userId + ")"]);
+    $crisp.push(["set", "session:data", ["user_id", userDataForCrisp.userId]]);
 
     console.log("Crisp Loaded");
 
@@ -171,45 +172,45 @@ async function loadCrisp() {
     alterarEstiloDoCrisp();
 
     // PERSISTE A SESSÃO COM BASE NO USER ID DA SUMOOL
-    if (frontCookie !== "") {
+    // if (frontCookie !== "") {
 
-      console.log("trying to push user_id to Crisp Session");
-      $crisp.push(["set", "session:data", ["user_id", userDataForCrisp.userId]]);
-      console.log("pushed " + userDataForCrisp.userId + "successful");
+    //   console.log("trying to push user_id to Crisp Session");
+    //   $crisp.push(["set", "session:data", ["user_id", userDataForCrisp.userId]]);
+    //   console.log("pushed " + userDataForCrisp.userId + "successful");
 
 
-      //guicortei@gmail.com -> U022764
-      //maluco@maluco.com -> U022933
-      //flowborder@flowborder.com -> U022992
-      //ccc@qq.com -> U000001 (login dos devs china)
+    //   //guicortei@gmail.com -> U022764
+    //   //maluco@maluco.com -> U022933
+    //   //flowborder@flowborder.com -> U022992
+    //   //ccc@qq.com -> U000001 (login dos devs china)
       
-      // if (!CRISP_allowedUsers.includes(userDataForCrisp.userId)) {
-      //   console.log("Hidding Crisp, type crisp() to show Crisp");
-      //   $crisp.push(["do", "chat:hide"]);
-      // } else {
-      //   HideShowDivUseePay("show")
-      // }
+    //   // if (!CRISP_allowedUsers.includes(userDataForCrisp.userId)) {
+    //   //   console.log("Hidding Crisp, type crisp() to show Crisp");
+    //   //   $crisp.push(["do", "chat:hide"]);
+    //   // } else {
+    //   //   HideShowDivUseePay("show")
+    //   // }
 
-      // ENVIA O COOKIE PARA O MAKE
-      const payload = {
-        user_id_sumool: userDataForCrisp.userId || "",
-        session_id: session_id || "",
-        cookie: frontCookie || "",
-        user_name_sumool:  userDataForCrisp.fullName || ""
-      };
-      console.log(payload)
+    //   // ENVIA O COOKIE PARA O MAKE
+    //   const payload = {
+    //     user_id_sumool: userDataForCrisp.userId || "",
+    //     session_id: session_id || "",
+    //     cookie: frontCookie || "",
+    //     user_name_sumool:  userDataForCrisp.fullName || ""
+    //   };
+    //   console.log(payload)
 
-      fetch("https://hook.us2.make.com/2cqv7guv1oq8353nipfwtrvrfkwtzbjy", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      })
-        .then(response => console.log("Webhook Cookie enviado com sucesso"))
-        .catch(error => console.error("Erro ao enviar para o Webhook Cookie:", error));
+    //   fetch("https://hook.us2.make.com/2cqv7guv1oq8353nipfwtrvrfkwtzbjy", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json"
+    //     },
+    //     body: JSON.stringify(payload)
+    //   })
+    //     .then(response => console.log("Webhook Cookie enviado com sucesso"))
+    //     .catch(error => console.error("Erro ao enviar para o Webhook Cookie:", error));
 
-    }
+    // }
 
   }]);
 
