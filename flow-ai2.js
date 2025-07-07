@@ -912,7 +912,7 @@ function adicionarBotaoDropdownAssinatura() {
     }
   } catch (e) {}
 
-  const gerenciarLink = `https://app.flowborder.com/api/subscriptions/manage?subscription_id=${encodeURIComponent(subId)}`;
+  const gerenciarLink = `https://app.flowborder.com/flow-api/subscriptions/manage?subscription_id=${encodeURIComponent(subId)}`;
 
   const li = document.createElement('li');
   li.className = 'list-inline-item dropdown notification-list';
@@ -1057,7 +1057,7 @@ function adicionarBotaoDropdownAssinatura() {
       const token = document.querySelector('meta[name="FLOW_Token"]')?.getAttribute('value');
       const enterpriseCode = document.querySelector('meta[name="FLOW_EnterpriseCode"]')?.getAttribute('value');
 
-      fetch(`https://app.flowborder.com/api/subscriptions/activation/${enterpriseCode}`, {
+      fetch(`https://app.flowborder.com/flow-api/subscriptions/activation/${enterpriseCode}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
