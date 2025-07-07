@@ -208,6 +208,9 @@ async function loadCrisp() {
 
   }]);
 
+  // Chamada da função
+  alterarEstiloDoCrisp();
+
 }
 
 //************************************************
@@ -640,6 +643,64 @@ function substituirHrefBotaoPDF() {
 
   links[0].setAttribute("href", "javascript:generateFlowBorderPDF()");
 }
+
+//************************************************
+//      Alterar estilo do CRISP
+//************************************************
+
+function alterarEstiloDoCrisp() {
+  // ------------ ocultar "We run on Crisp"
+  document.querySelectorAll('a[href^="https://crisp.chat/en/livechat/"][rel*="noreferrer"]').forEach(el => {
+    el.innerHTML = '';
+  });
+
+  // ------------ ocultar botão "Conversação"
+  const xpath1 = '//*[@id="crisp-chatbox"]/div/div/div[1]/div/span[1]';
+  const result1 = document.evaluate(xpath1, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+  const element1 = result1.singleNodeValue;
+  if (element1) {
+    element1.style.setProperty('display', 'none', 'important');
+  }
+
+  // ------------ ocultar "O suporte está online"
+  const xpath2 = '//*[@id="crisp-chatbox"]/div/div/div[1]/div/div/span[2]/span/span[2]';
+  const result2 = document.evaluate(xpath2, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+  const element2 = result2.singleNodeValue;
+  if (element2) {
+    element2.style.setProperty('display', 'none', 'important');
+  }
+
+  // ------------ alterar título para "FlowBorder AI" e padding
+  const xpath3 = '//*[@id="crisp-chatbox"]/div/div/div[1]/div/div/span[2]/span/span[1]';
+  const result3 = document.evaluate(xpath3, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+  const element3 = result3.singleNodeValue;
+  if (element3) {
+    element3.innerHTML = 'FlowBorder AI';
+    element3.style.setProperty('padding-bottom', '8px', 'important');
+  }
+
+  // ------------ altura do chat (100vh - 150px)
+  const xpath4 = '//*[@id="crisp-chatbox"]/div/div/div[2]';
+  const result4 = document.evaluate(xpath4, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+  const target4 = result4.singleNodeValue;
+  if (target4) {
+    const applyFix4 = () => {
+      target4.style.setProperty('height', 'calc(100vh - 150px)', 'important');
+    };
+
+    applyFix4();
+
+    const observer4 = new MutationObserver(() => {
+      applyFix4();
+    });
+
+    observer4.observe(target4, {
+      attributes: true,
+      attributeFilter: ['style'],
+    });
+  }
+}
+
 
 //************************************************
 //************************************************
