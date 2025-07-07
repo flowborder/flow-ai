@@ -165,6 +165,9 @@ async function loadCrisp() {
 
      observeCrispMessages()
 
+     // Chamada da função
+    alterarEstiloDoCrisp();
+
     // PERSISTE A SESSÃO COM BASE NO USER ID DA SUMOOL
     if (frontCookie !== "") {
 
@@ -208,8 +211,7 @@ async function loadCrisp() {
 
   }]);
 
-  // Chamada da função
-  alterarEstiloDoCrisp();
+  
 
 }
 
