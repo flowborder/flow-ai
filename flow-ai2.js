@@ -700,6 +700,173 @@ function alterarEstiloDoCrisp() {
       attributeFilter: ['style'],
     });
   }
+
+  // ---- bloqueia/desbloqueia textarea esperando pela IA
+  // aguardar até 120s por uma resposta
+  controlarTextareaDoCrisp(120);
+
+}
+
+//************************************************
+//    controlar Text Area do CRISP esperando resposta da IA
+//************************************************
+
+function controlarTextareaDoCrisp(segundosLimite = 10) {
+  (function injectStyles() {
+    const style = document.createElement('style');
+    style.textContent = `
+.crisp-fade-mask {
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, white 50%, transparent 100%);
+  -webkit-mask-size: 200% 100%;
+  -webkit-mask-position: 100% 0;
+  -webkit-mask-repeat: no-repeat;
+  animation: crisp-mask-slide 2s infinite linear;
+  pointer-events: none;
+}
+
+textarea.crisp-fade-mask:disabled::placeholder {
+  color: #111 !important;
+  opacity: 1 !important;
+}
+
+@keyframes crisp-mask-slide {
+  0%   { -webkit-mask-position: 100% 0; }
+  50%  { -webkit-mask-position: 0% 0; }
+  100% { -webkit-mask-position: 100% 0; }
+}
+
+.crisp-stop-icon {
+  width: 27px;
+  height: 27px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background-color: white;
+  border: 2px solid #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: crisp-stop-fade 1.5s infinite ease-in-out;
+  cursor: pointer !important;
+  font-size: 16px;
+  color: #333;
+  z-index: 9999 !important;
+}
+
+.crisp-stop-icon:hover {
+  background-color: #f3f3f3;
+}
+
+@keyframes crisp-stop-fade {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+`;
+    document.head.appendChild(style);
+  })();
+
+  function waitForCrisp() {
+    if (typeof $crisp === 'undefined') {
+      setTimeout(waitForCrisp, 500);
+      return;
+    }
+
+    let timeoutId = null;
+    let tempoInicial = null;
+
+    function getTextarea() {
+      const xpath = '//*[@id="crisp-chatbox"]/div/div/div[2]/div/div[5]/form/textarea';
+      const result = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+      return result.singleNodeValue;
+    }
+
+    function getSendButtonWrapper() {
+      const xpath = '//*[@id="crisp-chatbox"]/div/div/div[2]/div/div[5]/div';
+      const result = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+      return result.singleNodeValue;
+    }
+
+    function ensureStopIcon() {
+      const wrapper = getSendButtonWrapper();
+      if (!wrapper) return;
+
+      let stopIcon = document.getElementById('crisp-stop-icon');
+      if (!stopIcon) {
+        stopIcon = document.createElement('div');
+        stopIcon.id = 'crisp-stop-icon';
+        stopIcon.className = 'crisp-stop-icon';
+        stopIcon.title = 'Cancelar espera';
+
+        stopIcon.addEventListener('click', () => {
+          clearTimeout(timeoutId);
+          const textarea = getTextarea();
+          aplicarMascara(textarea, false);
+        });
+
+        const icon = document.createElement('i');
+        icon.className = 'fa-solid fa-circle-stop';
+        icon.style.setProperty('all', 'unset', 'important');
+        icon.style.setProperty('font-family', '"Font Awesome 6 Free"', 'important');
+        icon.style.setProperty('font-weight', '900', 'important');
+        icon.style.setProperty('display', 'inline-block', 'important');
+        icon.style.setProperty('font-style', 'normal', 'important');
+        icon.style.setProperty('font-size', '20px', 'important');
+        icon.style.setProperty('color', '#333', 'important');
+        icon.style.setProperty('cursor', 'pointer', 'important');
+
+        stopIcon.appendChild(icon);
+        wrapper.insertBefore(stopIcon, wrapper.firstChild);
+      }
+
+      stopIcon.style.setProperty('display', 'flex', 'important');
+    }
+
+    function hideStopIcon() {
+      const stopIcon = document.getElementById('crisp-stop-icon');
+      if (stopIcon) {
+        stopIcon.style.setProperty('display', 'none', 'important');
+      }
+    }
+
+    function aplicarMascara(textarea, ativar) {
+      if (!textarea) return;
+
+      if (ativar) {
+        textarea.disabled = true;
+        textarea.classList.add('crisp-fade-mask');
+
+        ensureStopIcon();
+
+        timeoutId = setTimeout(() => {
+          aplicarMascara(textarea, false);
+        }, segundosLimite * 1000);
+      } else {
+        textarea.disabled = false;
+        textarea.classList.remove('crisp-fade-mask');
+        hideStopIcon();
+      }
+    }
+
+    $crisp.push(["on", "message:sent", function({ from }) {
+      if (from !== "user") return;
+      const textarea = getTextarea();
+      aplicarMascara(textarea, true);
+      tempoInicial = Date.now();
+    }]);
+
+    $crisp.push(["on", "message:received", function({ from }) {
+      if (from !== "operator" || tempoInicial === null) return;
+      const tempoResposta = Math.round((Date.now() - tempoInicial) / 1000);
+      if (tempoResposta <= segundosLimite) {
+        clearTimeout(timeoutId);
+        const textarea = getTextarea();
+        aplicarMascara(textarea, false);
+        tempoInicial = null;
+      }
+    }]);
+  }
+
+  waitForCrisp();
 }
 
 
