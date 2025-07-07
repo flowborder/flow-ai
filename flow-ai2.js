@@ -687,6 +687,13 @@ function alterarEstiloDoCrisp() {
     element33.style.setProperty('height', '33px', 'important');
   }
 
+  const xpath333 = '//*[@id="crisp-chatbox"]/div/div/div[1]/div/div';
+  const result333 = document.evaluate(xpath333, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+  const element333 = result333.singleNodeValue;
+  if (element333) {
+    element33.innerHTML = '';
+  }
+
   // ------------ altura do chat (100vh - 150px)
   const xpath4 = '//*[@id="crisp-chatbox"]/div/div/div[2]';
   const result4 = document.evaluate(xpath4, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
