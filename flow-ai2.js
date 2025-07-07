@@ -146,8 +146,7 @@ async function loadCrisp() {
   //if (frontCookie !== "") {
     userDataForCrisp = extractUserDataFromMeta();
     window.CRISP_TOKEN_ID = userDataForCrisp.userId;  // o UUID gerado no backend
-    $crisp.push(["set", "user:email", userDataForCrisp.userEmail]);
-    $crisp.push(["set", "user:nickname", userDataForCrisp.fullName + " (" + userDataForCrisp.userId + ")"]);
+    
   //}
   console.log(userDataForCrisp);
 
@@ -160,6 +159,9 @@ async function loadCrisp() {
   })();
 
   $crisp.push(["on", "session:loaded", function (session_id) {
+
+    $crisp.push(["set", "user:email", userDataForCrisp.userEmail]);
+    $crisp.push(["set", "user:nickname", userDataForCrisp.fullName + " (" + userDataForCrisp.userId + ")"]);
 
     console.log("Crisp Loaded");
 
