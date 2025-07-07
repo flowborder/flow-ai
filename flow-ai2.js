@@ -693,7 +693,7 @@ function adicionarBotaoDropdownAssinatura() {
   if (subscriptionStatus === 'active') {
     if (linkAssinar) linkAssinar.style.display = 'none';
     if (ativar) {
-      ativar.textContent = 'Assinatura ativada';
+      ativar.textContent = 'Assinatura ' + userDataForCrisp.remarks.plan_name;
       ativar.style.pointerEvents = 'none';
       ativar.style.opacity = '0.5';
     }
