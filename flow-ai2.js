@@ -677,8 +677,7 @@ function alterarEstiloDoCrisp() {
   const result3 = document.evaluate(xpath3, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
   const element3 = result3.singleNodeValue;
   if (element3) {
-    element3.innerHTML = 'FlowBorder AI';
-    element3.style.setProperty('padding-bottom', '8px', 'important');
+    element3.style.setProperty('display', 'none', 'important');
   }
 
   // ------------ altura do chat (100vh - 150px)
