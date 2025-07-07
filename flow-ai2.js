@@ -1119,7 +1119,7 @@ function adicionarBotaoDropdownAssinatura() {
 //************************************************
 //************************************************
 
-const TEST_users = ["U022764", "U022933", "U022992", "U000001", "U023094"]
+const TEST_users = ["U022764", "U022933", "U022992", "U000001", "U023094", "U023172"]
 
 window.addEventListener("load", function () {
 
