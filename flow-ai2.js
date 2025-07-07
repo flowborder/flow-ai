@@ -672,12 +672,19 @@ function alterarEstiloDoCrisp() {
     element2.style.setProperty('display', 'none', 'important');
   }
 
-  // ------------ alterar título para "FlowBorder AI" e padding
+  // ------------ cabeçalho minimalista
   const xpath3 = '//*[@id="crisp-chatbox"]/div/div/div[1]/div/div/span[2]/span/span[1]';
   const result3 = document.evaluate(xpath3, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
   const element3 = result3.singleNodeValue;
   if (element3) {
     element3.style.setProperty('display', 'none', 'important');
+  }
+
+  const xpath33 = '//*[@id="crisp-chatbox"]/div/div/div[1]/div/div';
+  const result33 = document.evaluate(xpath33, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+  const element33 = result33.singleNodeValue;
+  if (element33) {
+    element33.style.setProperty('height', '33px', 'important');
   }
 
   // ------------ altura do chat (100vh - 150px)
