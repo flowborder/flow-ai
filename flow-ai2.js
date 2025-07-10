@@ -1138,12 +1138,12 @@ window.addEventListener("load", function () {
       userData = extractUserDataFromMeta();
       
       if (TEST_users.includes(userData.userId)) {
-        HideShowDivUseePay("show")
+        //HideShowDivUseePay("show")
         adicionarBotaoDropdownAssinatura();
         loadCrisp();
         //substituirHrefBotaoPDF()
       } else {
-        HideShowDivUseePay("hide")
+        //HideShowDivUseePay("hide")
       }
       // -------------------------------
 
