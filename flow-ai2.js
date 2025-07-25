@@ -724,7 +724,7 @@ function alterarEstiloDoCrisp() {
     const hideInvalidEmailLinks = () => {
       const invalidLinks = document.querySelectorAll('a[data-type="email_invalid"]');
       invalidLinks.forEach(link => {
-        link.style.display = 'none';
+        link.style.setProperty('display', 'none', 'important');
       });
     };
 
