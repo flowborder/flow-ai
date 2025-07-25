@@ -1159,7 +1159,7 @@ window.addEventListener("load", function () {
       console.log("[Flow] Starting initialization...");
       addAboutUsMenu();
       enableFloatingPendingPayment();
-      hideCrispInvalidEmailAlert();
+      
 
       // ---- funções em teste --------
       userData = extractUserDataFromMeta();
