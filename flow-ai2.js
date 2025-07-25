@@ -1111,7 +1111,15 @@ function adicionarBotaoDropdownAssinatura() {
   });
 }
 
+//**************
+// CSS para ocultar a mensagem de "email invalido" no crisp
+//**************
 
+function hideCrispInvalidEmailAlert() {
+    const style = document.createElement("style");
+    style.innerHTML = 'a[data-type="email_invalid"] { display: none !important; }';
+    document.head.appendChild(style);
+}
 
 //************************************************
 //************************************************
@@ -1133,6 +1141,7 @@ window.addEventListener("load", function () {
       console.log("[Flow] Starting initialization...");
       addAboutUsMenu();
       enableFloatingPendingPayment();
+      hideCrispInvalidEmailAlert();
 
       // ---- funções em teste --------
       userData = extractUserDataFromMeta();
