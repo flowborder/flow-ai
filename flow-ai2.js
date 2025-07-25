@@ -718,6 +718,33 @@ function alterarEstiloDoCrisp() {
     });
   }
 
+  // ------------ observar mudanças na crisp-client e ocultar links inválidos
+  const crispDiv = document.querySelector('.crisp-client');
+  if (crispDiv) {
+    const hideInvalidEmailLinks = () => {
+      const invalidLinks = document.querySelectorAll('a[data-type="email_invalid"]');
+      invalidLinks.forEach(link => {
+        link.style.display = 'none';
+      });
+    };
+
+    const observerEmails = new MutationObserver(() => {
+      hideInvalidEmailLinks();
+    });
+
+    observerEmails.observe(crispDiv, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      characterData: true
+    });
+
+    // Executa imediatamente também
+    hideInvalidEmailLinks();
+  }
+
+  
+
   // ---- bloqueia/desbloqueia textarea esperando pela IA
   // aguardar até 120s por uma resposta
   controlarTextareaDoCrisp(120);
@@ -1111,15 +1138,6 @@ function adicionarBotaoDropdownAssinatura() {
   });
 }
 
-//**************
-// CSS para ocultar a mensagem de "email invalido" no crisp
-//**************
-
-function hideCrispInvalidEmailAlert() {
-    const style = document.createElement("style");
-    style.innerHTML = 'a[data-type="email_invalid"] { display: none !important; }';
-    document.head.appendChild(style);
-}
 
 //************************************************
 //************************************************
