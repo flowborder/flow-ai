@@ -313,7 +313,8 @@ function observeCrispMessages() { //<----- CHAMAR ESSA FUNÇÃO PARA CARREGAR O 
 function HideShowDivUseePay(acao) {
   console.log("[Useepay] Initialization: " +acao);
   try {
-    const targetSrc = "/ClientContent/images/Billing/useepay.png";
+    //const targetSrc = "/ClientContent/images/Billing/useepay.png";
+    const targetSrc = "/ClientContent/images/Billing/interPix.png";
     const images = document.querySelectorAll(`img[src="${targetSrc}"]`);
 
     images.forEach(img => {
