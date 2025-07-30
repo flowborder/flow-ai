@@ -1355,7 +1355,7 @@ function customBillingDivs() {
                 // Outros campos com o botão de copiar
                 formGroup.innerHTML = `<label class="form-item-label">${item.label}：</label>
                                        <span class="text-wrap">${item.content}</span>
-                                       <a onclick="doTextCopy(this)" href="javascript:void(0)" class="ml-2" title="Copy" hgtrans="true">
+                                       <a onclick="doTextCopyCustomFlow(this)" href="javascript:void(0)" class="ml-2" title="Copy" hgtrans="true">
                                            <i class="bi bi-files"></i>
                                        </a>`;
             }
@@ -1403,6 +1403,27 @@ function customBillingDivs() {
 
     // Inicia o observer para detectar novos iframes
     observeNewIframes();
+}
+
+function doTextCopyCustomFlow(button) {
+    // Obtém o texto que precisa ser copiado (conteúdo do <span>)
+    var text = button.previousElementSibling.textContent;
+
+    // Cria um campo de texto temporário para copiar
+    var textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+
+    // Seleciona e copia o conteúdo do campo temporário
+    textArea.select();
+    textArea.setSelectionRange(0, 99999); // Para dispositivos móveis
+    document.execCommand("copy");
+
+    // Remove o campo temporário após a cópia
+    document.body.removeChild(textArea);
+
+    // Alerta o usuário (opcional)
+    alert("Texto copiado: " + text);
 }
 
 
