@@ -1213,6 +1213,197 @@ function hidePayoneerAndSwiftInIframes() {
     observeNewIframes();
 }
 
+//---
+// custom Billing divs
+//---
+
+function customBillingDivs() {
+    // Flag para garantir que o log "[hidding PAYONEER & SWIFT]" seja exibido apenas uma vez
+    let hasLogged = false;
+
+    // Função para verificar e remover as divs com os textos "PAYONEER" ou "SWIFT" e adicionar novos blocos
+    function checkAndRemoveDivs(iframe) {
+        // Exibe a mensagem inicial apenas uma vez
+        if (!hasLogged) {
+            console.log('[hidding PAYONEER & SWIFT]');
+            hasLogged = true; // Marca que a mensagem foi exibida
+        }
+
+        // Acessa o conteúdo do iframe após o carregamento
+        var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+
+        // Verifica se o conteúdo do iframe foi carregado
+        if (iframeDocument) {
+            // Procura por todas as divs com a classe 'alert alert-primary'
+            var alertDivs = iframeDocument.querySelectorAll('.alert.alert-primary');
+
+            // Para cada div encontrada, verifica o conteúdo
+            alertDivs.forEach(function(div) {
+                if (div.innerHTML.includes('PAYONEER') || div.innerHTML.includes('SWIFT')) {
+                    console.log('Removendo div com PAYONEER ou SWIFT dentro do iframe.');
+                    div.remove();  // Remove a div
+                }
+            });
+
+            // Remove a classe 'h-100' da div que contém "PIX"
+            removeH100ClassFromPIX(iframeDocument);
+
+            // Adiciona os 3 novos blocos de informações logo abaixo da div que contém "PIX"
+            addNewDivs(iframeDocument);
+        }
+    }
+
+    // Função para remover a classe 'h-100' da div que contém "PIX"
+    function removeH100ClassFromPIX(iframeDocument) {
+        var pixDiv = iframeDocument.querySelector('div.alert.alert-primary h5');
+        if (pixDiv && pixDiv.textContent.includes("PIX")) {
+            var targetDiv = pixDiv.closest('div.alert.alert-primary');
+            targetDiv.classList.remove('h-100');
+        }
+    }
+
+    // Função para adicionar os 3 novos blocos de informações dentro do iframe
+    function addNewDivs(iframeDocument) {
+        // Encontra a div que contém o texto "PIX"
+        var pixDiv = iframeDocument.querySelector('div.alert.alert-primary h5');
+        
+        if (pixDiv && pixDiv.textContent.includes("PIX")) {
+            // A div que contém "PIX" foi encontrada, então procuramos a div pai
+            var targetDiv = pixDiv.closest('div.alert.alert-primary');
+
+            // Cria os novos blocos e adiciona logo abaixo da div que contém "PIX"
+            var div1 = createStyledBlock(
+                'Transferência Doméstica nos EUA (ACH/Wire em USD):',
+                'Para quem envia de um banco americano em dólar (USD)',
+                [
+                    { label: 'Receiving Bank', content: '' },
+                    { label: 'ABA Routing Number', content: '091311229' },
+                    { label: 'Bank Name', content: 'Choice Financial Group (Mercury uses Choice Financial Group as a banking partner)' },
+                    { label: 'Bank Address', content: '4501 23rd Avenue S, Fargo, ND 58104' },
+                    { label: 'Beneficiary', content: '' },
+                    { label: 'Beneficiary Name', content: 'HEADSHOT AMERICA LLC' },
+                    { label: 'Account Number', content: '202572442388' },
+                    { label: 'Type of Account', content: 'Checking' },
+                    { label: 'Beneficiary Address', content: '131 Continental Drive, STE 301 - Newark, DE 19713' }
+                ]
+            );
+
+            var div2 = createStyledBlock(
+                'Transferência Internacional em USD (Wire/SWIFT):',
+                'Para quem envia dólares (USD) de fora dos EUA',
+                [
+                    { label: 'Receiving Bank', content: '' },
+                    { label: 'SWIFT/BIC Code', content: 'CHFGUS44021' },
+                    { label: 'ABA Routing Number', content: '091311229' },
+                    { label: 'Bank Name', content: 'Choice Financial Group' },
+                    { label: 'Bank Address', content: '4501 23rd Avenue S, Fargo, ND 58104, USA' },
+                    { label: 'Beneficiary', content: '' },
+                    { label: 'IBAN/Account Number', content: '202572442388' },
+                    { label: 'Beneficiary Name', content: 'HEADSHOT AMERICA LLC' },
+                    { label: 'Beneficiary Address', content: '131 Continental Drive, STE 301, Newark, DE 19713, USA' }
+                ]
+            );
+
+            var div3 = createStyledBlock(
+                'Transferência Internacional em Outras Moedas (EUR, GBP, CAD, etc):',
+                'Para quem envia em moeda estrangeira diferente de USD',
+                [
+                    { label: '⚠️ <font color="red">Atenção</font>', content: 'No campo “<font color="red">Memo</font>” ou referência, obrigatoriamente coloque: <font color="red">/FFC/202572442388/HEADSHOT AMERICA LLC/131 Continental Drive, STE 301 Newark, DE 19713</font>' },
+                    { label: 'Receiving Bank', content: '' },
+                    { label: 'SWIFT/BIC Code', content: 'CHASUS33' },
+                    { label: 'ABA Routing Number', content: '021000021' },
+                    { label: 'Bank Name', content: 'JP Morgan Chase Bank, N.A. – New York' },
+                    { label: 'Bank Address', content: '383 Madison Avenue, Floor 23, New York, NY 10017, USA' },
+                    { label: 'Beneficiary', content: '' },
+                    { label: 'IBAN/Account Number', content: '707567692' },
+                    { label: 'Beneficiary Name', content: 'Choice Financial Group' },
+                    { label: 'Beneficiary Address', content: '4501 23rd Ave S, Fargo, ND 58104, USA' }
+                ]
+            );
+
+            // Adiciona os blocos ao targetDiv na ordem invertida
+            targetDiv.insertAdjacentElement('afterend', div3);
+            targetDiv.insertAdjacentElement('afterend', div2);
+            targetDiv.insertAdjacentElement('afterend', div1);
+        }
+    }
+
+    // Função para criar um bloco com subtítulos e conteúdo, aplicando o estilo adequado
+    function createStyledBlock(title, description, items) {
+        var div = document.createElement('div');
+        div.classList.add('alert', 'alert-primary');
+        div.setAttribute('role', 'alert');
+        
+        // Adiciona título e descrição
+        div.innerHTML = `<div class="form-group row text-center">
+                            <h5 class="col-sm-12 text-dark mb-1">${title}</h5>
+                        </div>
+                        <div class="form-group mb-1">
+                            <p>${description}</p>
+                        </div>`;
+
+        // Adiciona as informações de cada item
+        items.forEach(function(item) {
+            var formGroup = document.createElement('div');
+            formGroup.classList.add('form-group', 'mb-1');
+            
+            if (item.label === 'Receiving Bank' || item.label === 'Beneficiary') {
+                // Subtítulos, em preto e sem dois pontos nem botão de copiar
+                formGroup.innerHTML = `<strong style="color: black;">${item.label}</strong>
+                                       <p>${item.content}</p>`;
+            } else {
+                // Outros campos com o botão de copiar
+                formGroup.innerHTML = `<label class="form-item-label">${item.label}：</label>
+                                       <span class="text-wrap">${item.content}</span>
+                                       <a onclick="doTextCopy(this)" href="javascript:void(0)" class="ml-2" title="Copy" hgtrans="true">
+                                           <i class="bi bi-files"></i>
+                                       </a>`;
+            }
+            div.appendChild(formGroup);
+        });
+
+        return div;
+    }
+
+    // Função para observar a adição de novos iframes ao DOM e configurar o onload
+    function observeNewIframes() {
+        // Cria um MutationObserver para monitorar a adição de novos elementos ao DOM
+        var observer = new MutationObserver(function(mutationsList) {
+            mutationsList.forEach(function(mutation) {
+                // Verifica se novos nós foram adicionados ao DOM
+                if (mutation.type === 'childList') {
+                    mutation.addedNodes.forEach(function(node) {
+                        // Se o nó adicionado for um iframe
+                        if (node.tagName === 'IFRAME') {
+                            // Configura o evento onload para verificar e remover a div "PAYONEER" ou "SWIFT"
+                            node.onload = function() {
+                                checkAndRemoveDivs(node);
+                            };
+                            console.log('Novo iframe detectado na página.');
+                        }
+                    });
+                }
+            });
+        });
+
+        // Configura o observer para monitorar mudanças no DOM
+        observer.observe(document.body, {
+            childList: true, // Monitorar a adição e remoção de elementos
+            subtree: true    // Incluir toda a árvore do DOM
+        });
+    }
+
+    // Configura o onload para os iframes existentes no momento da execução
+    var existingIframes = document.querySelectorAll('iframe');
+    existingIframes.forEach(function(iframe) {
+        iframe.onload = function() {
+            checkAndRemoveDivs(iframe);
+        };
+    });
+
+    // Inicia o observer para detectar novos iframes
+    observeNewIframes();
+}
 
 
 //************************************************
@@ -1250,7 +1441,8 @@ window.addEventListener("load", function () {
         HideShowDivUseePay("hide")
                 
         // Chame a função ao final para iniciar o processo
-        hidePayoneerAndSwiftInIframes();
+        //hidePayoneerAndSwiftInIframes();
+        customBillingDivs();
 
       }
       // -------------------------------
