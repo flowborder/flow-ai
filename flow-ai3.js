@@ -1273,7 +1273,7 @@ function customBillingDivs() {
 
             // Cria os novos blocos e adiciona logo abaixo da div que contém "PIX"
             var div1 = createStyledBlock(
-                'Transferência Doméstica nos EUA <br>(ACH/Wire em USD):',
+                'Transferência Doméstica nos EUA <br>(ACH/Wire em USD)',
                 'Para quem envia de um banco americano em dólar (USD)',
                 [
                     { label: 'Receiving Bank', content: '' },
@@ -1289,7 +1289,7 @@ function customBillingDivs() {
             );
 
             var div2 = createStyledBlock(
-                'Transferência Internacional em USD (Wire/SWIFT):',
+                'Transferência Internacional em USD (Wire/SWIFT)',
                 'Para quem envia dólares (USD) de fora dos EUA',
                 [
                     { label: 'Receiving Bank', content: '' },
@@ -1305,7 +1305,7 @@ function customBillingDivs() {
             );
 
             var div3 = createStyledBlock(
-                'Transferência Internacional em Outras Moedas (EUR, GBP, CAD, etc):',
+                'Transferência Internacional em Outras Moedas (EUR, GBP, CAD, etc)',
                 'Para quem envia em moeda estrangeira diferente de USD',
                 [
                     { label: '⚠️ <font color="red">Atenção</font>', content: 'No campo “<font color="red">Memo</font>” ou referência, obrigatoriamente coloque: <font color="red">/FFC/202572442388/HEADSHOT AMERICA LLC/131 Continental Drive, STE 301 Newark, DE 19713</font>' },
