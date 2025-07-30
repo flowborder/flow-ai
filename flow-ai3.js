@@ -1143,15 +1143,15 @@ function adicionarBotaoDropdownAssinatura() {
 // OCULTAR PAYONER
 //**************
 
-function hidePayoneerInIframes() {
-    // Flag para garantir que o log "[hidding PAYONEER]" seja exibido apenas uma vez
+function hidePayoneerAndSwiftInIframes() {
+    // Flag para garantir que o log "[hidding PAYONEER & SWIFT]" seja exibido apenas uma vez
     let hasLogged = false;
 
-    // Função para verificar e remover a div com o texto "PAYONEER" dentro de um iframe
-    function checkAndRemovePayoneerDiv(iframe) {
+    // Função para verificar e remover a div com os textos "PAYONEER" ou "SWIFT" dentro de um iframe
+    function checkAndRemoveDivs(iframe) {
         // Exibe a mensagem inicial apenas uma vez
         if (!hasLogged) {
-            console.log('[hidding PAYONEER]');
+            console.log('[hidding PAYONEER & SWIFT]');
             hasLogged = true; // Marca que a mensagem foi exibida
         }
 
@@ -1165,8 +1165,8 @@ function hidePayoneerInIframes() {
 
             // Para cada div encontrada, verifica o conteúdo
             alertDivs.forEach(function(div) {
-                if (div.innerHTML.includes('PAYONEER')) {
-                    console.log('Removendo div com PAYONEER dentro do iframe.');
+                if (div.innerHTML.includes('PAYONEER') || div.innerHTML.includes('SWIFT')) {
+                    console.log('Removendo div com PAYONEER ou SWIFT dentro do iframe.');
                     div.remove();  // Remove a div
                 }
             });
@@ -1183,9 +1183,9 @@ function hidePayoneerInIframes() {
                     mutation.addedNodes.forEach(function(node) {
                         // Se o nó adicionado for um iframe
                         if (node.tagName === 'IFRAME') {
-                            // Configura o evento onload para verificar e remover a div "PAYONEER"
+                            // Configura o evento onload para verificar e remover a div "PAYONEER" ou "SWIFT"
                             node.onload = function() {
-                                checkAndRemovePayoneerDiv(node);
+                                checkAndRemoveDivs(node);
                             };
                             console.log('Novo iframe detectado na página.');
                         }
@@ -1205,13 +1205,14 @@ function hidePayoneerInIframes() {
     var existingIframes = document.querySelectorAll('iframe');
     existingIframes.forEach(function(iframe) {
         iframe.onload = function() {
-            checkAndRemovePayoneerDiv(iframe);
+            checkAndRemoveDivs(iframe);
         };
     });
 
     // Inicia o observer para detectar novos iframes
     observeNewIframes();
 }
+
 
 
 //************************************************
@@ -1247,7 +1248,10 @@ window.addEventListener("load", function () {
         //substituirHrefBotaoPDF()
       } else {
         HideShowDivUseePay("hide")
-        hidePayoneerInIframes();
+                
+        // Chame a função ao final para iniciar o processo
+        hidePayoneerAndSwiftInIframes();
+
       }
       // -------------------------------
 
