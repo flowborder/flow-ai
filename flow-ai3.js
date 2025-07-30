@@ -1423,7 +1423,7 @@ function doTextCopyCustomFlow(button) {
     document.body.removeChild(textArea);
 
     // Alerta o usuário (opcional)
-    alert("Texto copiado: " + text);
+    //alert("Texto copiado: " + text);
 }
 
 
