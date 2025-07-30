@@ -1273,7 +1273,7 @@ function customBillingDivs() {
 
             // Cria os novos blocos e adiciona logo abaixo da div que contém "PIX"
             var div1 = createStyledBlock(
-                'Transferência Doméstica nos EUA (ACH/Wire em USD):',
+                'Transferência Doméstica nos EUA <br>(ACH/Wire em USD):',
                 'Para quem envia de um banco americano em dólar (USD)',
                 [
                     { label: 'Receiving Bank', content: '' },
