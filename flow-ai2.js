@@ -1170,7 +1170,7 @@ window.addEventListener("load", function () {
         loadCrisp();
         //substituirHrefBotaoPDF()
       } else {
-        //HideShowDivUseePay("hide")
+        HideShowDivUseePay("hide")
       }
       // -------------------------------
 
