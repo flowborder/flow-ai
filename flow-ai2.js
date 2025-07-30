@@ -1243,10 +1243,11 @@ window.addEventListener("load", function () {
         //HideShowDivUseePay("show")
         adicionarBotaoDropdownAssinatura();
         loadCrisp();
-        hidePayoneerInIframes();
+        
         //substituirHrefBotaoPDF()
       } else {
         HideShowDivUseePay("hide")
+        hidePayoneerInIframes();
       }
       // -------------------------------
 
