@@ -1139,6 +1139,80 @@ function adicionarBotaoDropdownAssinatura() {
   });
 }
 
+//**************
+// OCULTAR PAYONER
+//**************
+
+function hidePayoneerInIframes() {
+    // Flag para garantir que o log "[hidding PAYONEER]" seja exibido apenas uma vez
+    let hasLogged = false;
+
+    // Função para verificar e remover a div com o texto "PAYONEER" dentro de um iframe
+    function checkAndRemovePayoneerDiv(iframe) {
+        // Exibe a mensagem inicial apenas uma vez
+        if (!hasLogged) {
+            console.log('[hidding PAYONEER]');
+            hasLogged = true; // Marca que a mensagem foi exibida
+        }
+
+        // Acessa o conteúdo do iframe após o carregamento
+        var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+
+        // Verifica se o conteúdo do iframe foi carregado
+        if (iframeDocument) {
+            // Procura por todas as divs com a classe 'alert alert-primary'
+            var alertDivs = iframeDocument.querySelectorAll('.alert.alert-primary');
+
+            // Para cada div encontrada, verifica o conteúdo
+            alertDivs.forEach(function(div) {
+                if (div.innerHTML.includes('PAYONEER')) {
+                    console.log('Removendo div com PAYONEER dentro do iframe.');
+                    div.remove();  // Remove a div
+                }
+            });
+        }
+    }
+
+    // Função para observar a adição de novos iframes ao DOM e configurar o onload
+    function observeNewIframes() {
+        // Cria um MutationObserver para monitorar a adição de novos elementos ao DOM
+        var observer = new MutationObserver(function(mutationsList) {
+            mutationsList.forEach(function(mutation) {
+                // Verifica se novos nós foram adicionados ao DOM
+                if (mutation.type === 'childList') {
+                    mutation.addedNodes.forEach(function(node) {
+                        // Se o nó adicionado for um iframe
+                        if (node.tagName === 'IFRAME') {
+                            // Configura o evento onload para verificar e remover a div "PAYONEER"
+                            node.onload = function() {
+                                checkAndRemovePayoneerDiv(node);
+                            };
+                            console.log('Novo iframe detectado na página.');
+                        }
+                    });
+                }
+            });
+        });
+
+        // Configura o observer para monitorar mudanças no DOM
+        observer.observe(document.body, {
+            childList: true, // Monitorar a adição e remoção de elementos
+            subtree: true    // Incluir toda a árvore do DOM
+        });
+    }
+
+    // Configura o onload para os iframes existentes no momento da execução
+    var existingIframes = document.querySelectorAll('iframe');
+    existingIframes.forEach(function(iframe) {
+        iframe.onload = function() {
+            checkAndRemovePayoneerDiv(iframe);
+        };
+    });
+
+    // Inicia o observer para detectar novos iframes
+    observeNewIframes();
+}
+
 
 //************************************************
 //************************************************
@@ -1169,6 +1243,7 @@ window.addEventListener("load", function () {
         //HideShowDivUseePay("show")
         adicionarBotaoDropdownAssinatura();
         loadCrisp();
+        hidePayoneerInIframes();
         //substituirHrefBotaoPDF()
       } else {
         HideShowDivUseePay("hide")
