@@ -1439,7 +1439,7 @@ const TEST_users = ["U022764", "U022933", "U022992", "U000001", "U023094", "U023
 Marcelo Cruz | U022812
 VX Negocios Digitais ~ U022898
 */
-const PIX_TEST_users = TEST_users.concat(["U022812", "U022898", "U023389"])
+const PIX_TEST_users = TEST_users.concat(["U022812", "U022898"])
 
 window.addEventListener("load", function () {
 
