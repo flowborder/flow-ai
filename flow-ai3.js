@@ -188,7 +188,7 @@ async function loadCrisp() {
     //   //   console.log("Hidding Crisp, type crisp() to show Crisp");
     //   //   $crisp.push(["do", "chat:hide"]);
     //   // } else {
-    //   //   HideShowDivUseePay("show")
+    //   //   HideShowDivPixInter("show")
     //   // }
 
     //   // ENVIA O COOKIE PARA O MAKE
@@ -310,7 +310,7 @@ function observeCrispMessages() { //<----- CHAMAR ESSA FUNÇÃO PARA CARREGAR O 
 // OCULTAR/MOSTRAR BOTAO DA USEEPAY
 //************************************************
 
-function HideShowDivUseePay(acao) {
+function HideShowDivPixInter(acao) {
   console.log("[Useepay] Initialization: " +acao);
   try {
     //const targetSrc = "/ClientContent/images/Billing/useepay.png";
@@ -1435,6 +1435,12 @@ function doTextCopyCustomFlow(button) {
 
 const TEST_users = ["U022764", "U022933", "U022992", "U000001", "U023094", "U023172"]
 
+/*
+Marcelo Cruz | U022812
+VX Negocios Digitais ~ U022898
+*/
+const PIX_TEST_users = TEST_users.concat(["U022812", "U022898"])
+
 window.addEventListener("load", function () {
 
   console.log("[FlowAI] Script injected successfully.");
@@ -1453,19 +1459,18 @@ window.addEventListener("load", function () {
       userData = extractUserDataFromMeta();
       
       if (TEST_users.includes(userData.userId)) {
-        //HideShowDivUseePay("show")
+        //HideShowDivPixInter("show")
         adicionarBotaoDropdownAssinatura();
-        loadCrisp();
-        
+        loadCrisp();        
         //substituirHrefBotaoPDF()
       } else {
-        HideShowDivUseePay("hide")
-                
-        // Chame a função ao final para iniciar o processo
-        //hidePayoneerAndSwiftInIframes();
         customBillingDivs();
-
       }
+
+      if (!PIX_TEST_users.includes(userData.userId)) {
+        HideShowDivPixInter("hide")
+      }
+      
       // -------------------------------
 
       if (userData?.remarks?.chat_bot === true) {
