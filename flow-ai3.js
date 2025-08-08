@@ -1592,7 +1592,7 @@ function carregarProdutosMapeados() {
   `;
 
   // 4) Cria iframe, mas deixa escondido
-  const src = `https://app.flowborder.com/flow-api/mapeados?RetailerCode=${encodeURIComponent(RetailerCode)}&Token=${encodeURIComponent(Token)}`;
+  const src = `https://app.flowborder.com/flow-api/mapeados?RetailerCode=${encodeURIComponent(RetailerCode)}&Token=${encodeURIComponent(Token)}&Mode=dev`;
   const iframe = document.createElement('iframe');
   iframe.src = src;
   iframe.style.width = '100%';
