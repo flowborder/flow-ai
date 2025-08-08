@@ -1426,6 +1426,139 @@ function doTextCopyCustomFlow(button) {
     //alert("Texto copiado: " + text);
 }
 
+//*************************
+// FORMATAR PIX
+//*************************
+async function formatarModalPix() {
+    const form = document.querySelector('#InterPix-payment-form');
+    if (!form) return;
+
+    // Helper: normaliza texto (trim e case-insensitive)
+    const norm = s => (s || '').trim();
+
+    // 1) Esconde blocos cujos <label> contenham Pix Fee / Benefits / Benefícios
+    form.querySelectorAll('label').forEach(label => {
+        const txt = norm(label.textContent);
+        if (
+            txt.includes('Pix Fee') ||
+            txt.includes('Benefits') ||
+            txt.includes('Benefícios')
+        ) {
+            const parentDiv = label.closest('div');
+            if (parentDiv) parentDiv.style.display = 'none';
+        }
+    });
+
+    // 2) Busca o HTML e extrai brlRate do bloco currentCy == "BRL"
+    let brlRate = null;
+    try {
+        const url = new URL('https://app.flowborder.com/CustomSetting/BankPayFileUpload');
+        url.search = new URLSearchParams({ amount: '1000', otherChargeName: '' }).toString();
+        const resp = await fetch(url.toString(), {
+            method: 'GET',
+            credentials: 'include',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const html = await resp.text();
+        const m = html.match(/currentCy\s*==\s*"BRL"[\s\S]*?parseFloat\("([0-9.]+)"\)/);
+        if (m) {
+            brlRate = parseFloat(m[1]);
+            console.log('brlRate capturado:', brlRate);
+        } else {
+            console.warn('Não foi possível localizar brlRate (BRL) no HTML.');
+        }
+    } catch (e) {
+        console.error('Erro ao buscar/parsear BankPayFileUpload:', e);
+    }
+
+    if (!brlRate || !isFinite(brlRate)) return;
+
+    // 3) Acha o <label> alvo: "Payment Amount" ou "Montante do pagamento"
+    const labels = Array.from(form.querySelectorAll('label'));
+    let paymentLabelEl = labels.find(l => {
+        const t = norm(l.textContent);
+        return t.includes('Payment Amount') || t.includes('Montante do pagamento');
+    });
+    if (!paymentLabelEl) return;
+
+    // DIV original do Payment Amount
+    const paymentDiv = paymentLabelEl.closest('div.form-group.form-inline') || paymentLabelEl.closest('div');
+    if (!paymentDiv) return;
+
+    const isPT = norm(paymentLabelEl.textContent).includes('Montante do pagamento');
+
+    // 4) Duplicar logo após (se ainda não duplicou)
+    if (!(paymentDiv.nextElementSibling && paymentDiv.nextElementSibling.dataset && paymentDiv.nextElementSibling.dataset.cloneBrl === '1')) {
+        const cloned = document.createElement('div');
+        cloned.className = 'form-group form-inline';
+        cloned.dataset.cloneBrl = '1';
+
+        // Label BRL mantendo idioma
+        const label = document.createElement('label');
+        label.className = 'my-1 mr-3';
+        label.innerHTML = (isPT ? 'Montante do pagamento (BRL)' : 'Payment Amount (BRL)') + '&nbsp;:';
+        cloned.appendChild(label);
+
+        // Span BRL
+        const spanBRL = document.createElement('span');
+        spanBRL.className = 'badge badge-warning font-size-1-2';
+        spanBRL.id = 'spPaymentAmountBRL-open-InterPixmodal';
+        spanBRL.textContent = 'R$0.00';
+        cloned.appendChild(spanBRL);
+
+        // Hidden opcional
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.id = 'endPaymentAmountBRL-open-InterPixmodal';
+        cloned.appendChild(hidden);
+
+        // Inserir logo depois da original
+        paymentDiv.insertAdjacentElement('afterend', cloned);
+    }
+
+    // 5) Alterar label original para (USD), mantendo idioma e sufixo " :"
+    const baseUSD = isPT ? 'Montante do pagamento (USD)' : 'Payment Amount (USD)';
+    paymentLabelEl.innerHTML = baseUSD + '&nbsp;:';
+
+    // 6) Atualizar BRL quando USD mudar
+    const spanUSD = document.getElementById('spPaymentAmount-open-InterPixmodal');
+    const spanBRL = document.getElementById('spPaymentAmountBRL-open-InterPixmodal');
+    if (spanUSD && spanBRL) {
+        const updateBRL = () => {
+            const usdRaw = (spanUSD.textContent || '').trim();
+            const usdVal = parseFloat(usdRaw.replace(/[^0-9.]/g, '')) || 0;
+            const brlVal = usdVal / brlRate; // BRL = USD / brlRate
+            spanBRL.textContent = `R$${brlVal.toFixed(2)}`;
+            const hidden = document.getElementById('endPaymentAmountBRL-open-InterPixmodal');
+            if (hidden) hidden.value = spanBRL.textContent;
+        };
+        updateBRL();
+        const mo = new MutationObserver(updateBRL);
+        mo.observe(spanUSD, { characterData: true, childList: true, subtree: true });
+    }
+
+    // 7) CSS para remover setinha do select
+    (function removerSetaSelect() {
+        const styleId = '__hide_select_arrow_paymentcurrency1__';
+        if (!document.getElementById(styleId)) {
+            const style = document.createElement('style');
+            style.id = styleId;
+            style.textContent = `
+                #PaymentCurrency1 {
+                    appearance: none;
+                    -webkit-appearance: none;
+                    -moz-appearance: none;
+                    background-image: none !important;
+                    padding-right: 10px;
+                }
+                #PaymentCurrency1.form-control::-ms-expand { display: none; }
+            `;
+            document.head.appendChild(style);
+        }
+    })();
+}
+
 
 //************************************************
 //************************************************
@@ -1467,10 +1600,19 @@ window.addEventListener("load", function () {
         customBillingDivs();
       }
 
+      // ---- exibir opcao de PIX apenas para determinados usuarios
       if (!PIX_TEST_users.includes(userData.userId)) {
+        // ocultar botao PIX
         HideShowDivPixInter("hide")
+      } else {
+        // botão PIX não sera ocultado
+
+        // ---- formatar a opcao de PIX para os usuarios (exceto o usuario da sumool)
+        if (userData.userId !== "U000001") {
+          formatarModalPix()
+        }
       }
-      
+
       // -------------------------------
 
       if (userData?.remarks?.chat_bot === true) {
