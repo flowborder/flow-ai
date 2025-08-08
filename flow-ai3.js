@@ -1559,6 +1559,94 @@ async function formatarModalPix() {
     })();
 }
 
+//*********************
+// PRODUTOS CONECTADOS
+//*********************
+
+function carregarProdutosMapeados() {
+  // 1) Confere se a URL termina com /CustomProduct/ProductConnecton
+  const endsWithProduct = /\/CustomProduct\/ProductConnecton\/?$/.test(location.pathname);
+  if (!endsWithProduct) return;
+
+  // 2) Extrai dados do usuário
+  const userData = extractUserDataFromMeta && extractUserDataFromMeta();
+  const RetailerCode = userData?.userId;
+  const Token = userData?.flowToken;
+
+  if (!RetailerCode || !Token) {
+    console.warn('RetailerCode/Token ausentes para montar o iframe de mapeados.');
+    return;
+  }
+
+  // 3) Encontra o container e injeta o spinner
+  const container = document.querySelector('.card-body');
+  if (!container) {
+    console.warn('Container .card-body não encontrado.');
+    return;
+  }
+
+  container.innerHTML = `
+    <div id="loading-spinner" style="display:flex;justify-content:center;align-items:center;height:300px;">
+      <div class="spinner-border" role="status" style="width:3rem;height:3rem;"></div>
+    </div>
+  `;
+
+  // 4) Cria iframe, mas deixa escondido
+  const src = `https://app.flowborder.com/flow-api/mapeados?RetailerCode=${encodeURIComponent(RetailerCode)}&Token=${encodeURIComponent(Token)}`;
+  const iframe = document.createElement('iframe');
+  iframe.src = src;
+  iframe.style.width = '100%';
+  iframe.style.border = '0';
+  iframe.style.display = 'none';
+  iframe.setAttribute('scrolling', 'no');
+  iframe.setAttribute('allowtransparency', 'true');
+
+  container.appendChild(iframe);
+
+  // 5) Ajuste de altura
+  const resizeIframe = () => {
+    try {
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      if (!doc) return;
+      const body = doc.body;
+      const html = doc.documentElement;
+      const height = Math.max(
+        body.scrollHeight, html.scrollHeight,
+        body.offsetHeight, html.offsetHeight,
+        body.clientHeight, html.clientHeight
+      );
+      iframe.style.height = height + 'px';
+    } catch (e) {
+      iframe.style.height = Math.max(window.innerHeight - 100, 600) + 'px';
+    }
+  };
+
+  iframe.addEventListener('load', () => {
+    // Some com o spinner e mostra o iframe já com altura ajustada
+    document.getElementById('loading-spinner')?.remove();
+    iframe.style.display = 'block';
+    resizeIframe();
+
+    try {
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      const ro = new ResizeObserver(resizeIframe);
+      ro.observe(doc.documentElement);
+      ro.observe(doc.body);
+
+      const mo = new MutationObserver(resizeIframe);
+      mo.observe(doc.documentElement, { childList: true, subtree: true, attributes: true, characterData: true });
+
+      const intervalId = setInterval(resizeIframe, 1000);
+      const observerParent = new MutationObserver(() => {
+        if (!document.body.contains(iframe)) clearInterval(intervalId);
+      });
+      observerParent.observe(document.body, { childList: true, subtree: true });
+    } catch (e) {
+      setInterval(resizeIframe, 1000);
+    }
+  });
+}
+
 
 //************************************************
 //************************************************
@@ -1586,6 +1674,8 @@ window.addEventListener("load", function () {
       console.log("[Flow] Starting initialization...");
       addAboutUsMenu();
       enableFloatingPendingPayment();
+      carregarProdutosMapeados();
+
       
 
       // ---- funções em teste --------
