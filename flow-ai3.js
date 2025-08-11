@@ -1691,16 +1691,20 @@ window.addEventListener("load", function () {
       }
 
       // ---- exibir opcao de PIX apenas para determinados usuarios
-      if (!PIX_TEST_users.includes(userData.userId)) {
-        // ocultar botao PIX
-        // HideShowDivPixInter("hide")
-      } else {
-        // botão PIX não sera ocultado
+      // if (!PIX_TEST_users.includes(userData.userId)) {
+      //   // ocultar botao PIX
+      //   // HideShowDivPixInter("hide")
+      // } else {
+      //   // botão PIX não sera ocultado
 
-        // ---- formatar a opcao de PIX para os usuarios (exceto o usuario da sumool)
-        if (userData.userId !== "U000001") {
-          formatarModalPix()
-        }
+      //   // ---- formatar a opcao de PIX para os usuarios (exceto o usuario da sumool)
+      //   if (userData.userId !== "U000001") {
+      //     formatarModalPix()
+      //   }
+      // }
+
+      if (userData.userId !== "U000001") {
+        formatarModalPix()
       }
 
       // -------------------------------
