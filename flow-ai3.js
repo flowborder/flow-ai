@@ -1259,6 +1259,7 @@ function customBillingDivs() {
         if (pixDiv && pixDiv.textContent.includes("PIX")) {
             var targetDiv = pixDiv.closest('div.alert.alert-primary');
             targetDiv.classList.remove('h-100');
+            targetDiv.classList.add('d-none');
         }
     }
 
