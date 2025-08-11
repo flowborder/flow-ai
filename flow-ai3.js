@@ -1693,7 +1693,7 @@ window.addEventListener("load", function () {
       // ---- exibir opcao de PIX apenas para determinados usuarios
       if (!PIX_TEST_users.includes(userData.userId)) {
         // ocultar botao PIX
-        HideShowDivPixInter("hide")
+        // HideShowDivPixInter("hide")
       } else {
         // botão PIX não sera ocultado
 
