@@ -1564,106 +1564,159 @@ async function formatarModalPix() {
 // PRODUTOS CONECTADOS
 //*********************
 
-function carregarProdutosMapeados() {
-  console.log("🔍 Iniciando carregarProdutosMapeados...");
+function carregarProdutosMapeados2() {
+  // console.log("🚀 iniciar carregarProdutosMapeados2");
+  // console.log("📎 pathname:", location.pathname);
 
-  // 1) Confere se a URL termina com /CustomProduct/ProductConnecton
   const endsWithProduct = /\/CustomProduct\/ProductConnecton\/?$/.test(location.pathname);
-  console.log("📄 URL confere?", endsWithProduct);
-  if (!endsWithProduct) return;
+  // console.log("🔎 regex /CustomProduct/ProductConnecton confere? =>", endsWithProduct);
+  if (!endsWithProduct) {
+    // console.warn("⛔ saindo: URL não confere.");
+    return;
+  }
 
-  // 2) Extrai dados do usuário
-  console.log("📡 Extraindo dados do usuário...");
-  const userData = extractUserDataFromMeta && extractUserDataFromMeta();
+  // console.log("📡 tentando extrair userData via extractUserDataFromMeta...");
+  const userData = (typeof extractUserDataFromMeta === "function") ? extractUserDataFromMeta() : null;
+  // console.log("🧩 userData:", userData);
   const RetailerCode = userData?.userId;
   const Token = userData?.flowToken;
-  console.log("👤 RetailerCode:", RetailerCode, "Token:", Token ? "[ok]" : "[faltando]");
-
+  // console.log("👤 RetailerCode:", RetailerCode, "Token:", Token ? "[ok]" : "[faltando]");
   if (!RetailerCode || !Token) {
-    console.warn('⚠️ RetailerCode/Token ausentes para montar o iframe de mapeados.');
+    // console.warn("⛔ saindo: RetailerCode/Token ausentes.");
     return;
   }
 
-  // 3) Encontra o container e injeta o spinner
-  console.log("📦 Buscando container .card-body...");
-  const container = document.querySelector('.card-body');
+  // console.log("📦 procurando container .card-body dentro de .content-page...");
+  const container = document.querySelector(".content-page .card-body");
   if (!container) {
-    console.warn('⚠️ Container .card-body não encontrado.');
+    // console.warn("⛔ saindo: .card-body dentro de .content-page não encontrada.");
     return;
   }
+  // console.log("✅ container encontrado:", container);
 
-  console.log("⏳ Inserindo spinner de carregamento...");
+  const cs = window.getComputedStyle(container);
+  // console.log("🎛️ estilos do container — display:", cs.display, "visibility:", cs.visibility, "opacity:", cs.opacity);
+
   container.innerHTML = `
-    <div id="loading-spinner" style="display:flex;justify-content:center;align-items:center;height:300px;">
+    <div id="loading-spinner" style="display:flex;justify-content:center;align-items:center;min-height:300px;">
       <div class="spinner-border" role="status" style="width:3rem;height:3rem;"></div>
     </div>
   `;
 
-  // 4) Cria iframe, mas deixa escondido
+  const spinner = document.getElementById("loading-spinner");
+  // console.log("🌀 spinner presente?", !!spinner);
+
   const src = `https://app.flowborder.com/flow-api/mapeados?RetailerCode=${encodeURIComponent(RetailerCode)}&Token=${encodeURIComponent(Token)}&Mode=client`;
-  console.log("🖼️ Criando iframe com src:", src);
-  const iframe = document.createElement('iframe');
+  // console.log("🖼️ src do iframe:", src);
+
+  const iframe = document.createElement("iframe");
   iframe.src = src;
-  iframe.style.width = '100%';
-  iframe.style.border = '0';
-  iframe.style.display = 'none';
-  iframe.setAttribute('scrolling', 'no');
-  iframe.setAttribute('allowtransparency', 'true');
+  iframe.style.width = "100%";
+  iframe.style.border = "0";
+  iframe.style.display = "none";
+  iframe.setAttribute("scrolling", "no");
+  iframe.setAttribute("allowtransparency", "true");
 
   container.appendChild(iframe);
-  console.log("📌 Iframe adicionado ao DOM (oculto até carregar).");
+  // console.log("📌 iframe adicionado ao DOM (display:none até load).");
 
-  // 5) Ajuste de altura
-  const resizeIframe = () => {
+  const resizeIframe = (origin) => {
     try {
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
-      if (!doc) return;
+      const doc = iframe.contentDocument || iframe.contentWindow?.document;
+      if (!doc) {
+        // console.log(`📏(${origin}) sem acesso ao doc do iframe`);
+        return;
+      }
       const body = doc.body;
       const html = doc.documentElement;
+      if (!body || !html) {
+        // console.log(`📏(${origin}) body/html ausentes no iframe`);
+        return;
+      }
+
       const height = Math.max(
         body.scrollHeight, html.scrollHeight,
         body.offsetHeight, html.offsetHeight,
         body.clientHeight, html.clientHeight
       );
-      iframe.style.height = height + 'px';
-      console.log("📏 Altura do iframe ajustada para:", height, "px");
+
+      iframe.style.height = (height || 600) + "px";
+      // console.log(`📏(${origin}) altura calculada:`, height, "→ aplicada:", iframe.style.height);
+
+      if (!height || height < 50) {
+        const ifCS = window.getComputedStyle(iframe);
+        // console.warn(`⚠️(${origin}) altura muito baixa (${height}). display:`, ifCS.display);
+      }
     } catch (e) {
-      iframe.style.height = Math.max(window.innerHeight - 100, 600) + 'px';
-      console.warn("⚠️ Não foi possível acessar o conteúdo do iframe para medir altura, usando fallback.");
+      iframe.style.height = Math.max(window.innerHeight - 100, 600) + "px";
+      // console.warn(`⚠️(${origin}) exceção ao medir iframe`, e);
     }
   };
 
-  iframe.addEventListener('load', () => {
-    console.log("✅ Iframe carregado.");
-    document.getElementById('loading-spinner')?.remove();
-    iframe.style.display = 'block';
-    resizeIframe();
+  let loadFired = false;
+  const loadTimeout = setTimeout(() => {
+    if (!loadFired) {
+      // console.warn("⏰ timeout: iframe.onload não disparou em 12s.");
+      iframe.style.display = "block";
+      resizeIframe("timeout12s");
+    }
+  }, 12000);
+
+  iframe.addEventListener("load", () => {
+    loadFired = true;
+    clearTimeout(loadTimeout);
+    // console.log("✅ iframe onload disparou.");
+
+    iframe.style.display = "block";
+    // console.log("👁️ iframe agora visível.");
+
+    const sp = document.getElementById("loading-spinner");
+    if (sp) sp.remove();
+
+    resizeIframe("onload");
 
     try {
-      const doc = iframe.contentDocument || iframe.contentWindow.document;
-      const ro = new ResizeObserver(resizeIframe);
-      ro.observe(doc.documentElement);
-      ro.observe(doc.body);
-      console.log("🔍 ResizeObserver registrado.");
-
-      const mo = new MutationObserver(resizeIframe);
-      mo.observe(doc.documentElement, { childList: true, subtree: true, attributes: true, characterData: true });
-      console.log("📝 MutationObserver registrado.");
-
-      const intervalId = setInterval(resizeIframe, 1000);
-      console.log("⏱️ Intervalo de ajuste de altura iniciado.");
-      const observerParent = new MutationObserver(() => {
-        if (!document.body.contains(iframe)) {
-          clearInterval(intervalId);
-          console.log("🛑 Intervalo de ajuste de altura encerrado (iframe removido).");
-        }
-      });
-      observerParent.observe(document.body, { childList: true, subtree: true });
+      const doc = iframe.contentDocument || iframe.contentWindow?.document;
+      if (doc) {
+        const ro = new ResizeObserver(() => resizeIframe("ResizeObserver"));
+        ro.observe(doc.documentElement);
+        ro.observe(doc.body);
+      }
     } catch (e) {
-      console.warn("⚠️ Não foi possível observar mudanças no conteúdo do iframe.");
-      setInterval(resizeIframe, 1000);
+      // console.warn("⚠️ erro ao registrar ResizeObserver:", e);
     }
+
+    try {
+      const doc = iframe.contentDocument || iframe.contentWindow?.document;
+      if (doc) {
+        const mo = new MutationObserver(() => resizeIframe("MutationObserver"));
+        mo.observe(doc.documentElement, { childList: true, subtree: true, attributes: true, characterData: true });
+      }
+    } catch (e) {
+      // console.warn("⚠️ erro ao registrar MutationObserver:", e);
+    }
+
+    const intervalId = setInterval(() => resizeIframe("interval1s"), 1000);
+    const observerParent = new MutationObserver(() => {
+      if (!document.body.contains(iframe)) {
+        clearInterval(intervalId);
+      }
+    });
+    observerParent.observe(document.body, { childList: true, subtree: true });
   });
+
+  iframe.addEventListener("error", (e) => {
+    clearTimeout(loadTimeout);
+    // console.error("❌ erro ao carregar iframe:", e);
+  });
+
+  setTimeout(() => {
+    const ifCS = window.getComputedStyle(iframe);
+    // console.log("👀 estado do iframe (pré-load) — display:", ifCS.display);
+    if (!document.body.contains(iframe)) {
+      // console.warn("⚠️ iframe não está no DOM após append.");
+    }
+  }, 0);
 }
 
 
@@ -1694,7 +1747,7 @@ window.addEventListener("load", function () {
       console.log("[Flow] Starting initialization...");
       addAboutUsMenu();
       enableFloatingPendingPayment();
-      //carregarProdutosMapeados();
+      carregarProdutosMapeados2();
 
       
 
