@@ -1565,27 +1565,34 @@ async function formatarModalPix() {
 //*********************
 
 function carregarProdutosMapeados() {
+  console.log("🔍 Iniciando carregarProdutosMapeados...");
+
   // 1) Confere se a URL termina com /CustomProduct/ProductConnecton
   const endsWithProduct = /\/CustomProduct\/ProductConnecton\/?$/.test(location.pathname);
+  console.log("📄 URL confere?", endsWithProduct);
   if (!endsWithProduct) return;
 
   // 2) Extrai dados do usuário
+  console.log("📡 Extraindo dados do usuário...");
   const userData = extractUserDataFromMeta && extractUserDataFromMeta();
   const RetailerCode = userData?.userId;
   const Token = userData?.flowToken;
+  console.log("👤 RetailerCode:", RetailerCode, "Token:", Token ? "[ok]" : "[faltando]");
 
   if (!RetailerCode || !Token) {
-    console.warn('RetailerCode/Token ausentes para montar o iframe de mapeados.');
+    console.warn('⚠️ RetailerCode/Token ausentes para montar o iframe de mapeados.');
     return;
   }
 
   // 3) Encontra o container e injeta o spinner
+  console.log("📦 Buscando container .card-body...");
   const container = document.querySelector('.card-body');
   if (!container) {
-    console.warn('Container .card-body não encontrado.');
+    console.warn('⚠️ Container .card-body não encontrado.');
     return;
   }
 
+  console.log("⏳ Inserindo spinner de carregamento...");
   container.innerHTML = `
     <div id="loading-spinner" style="display:flex;justify-content:center;align-items:center;height:300px;">
       <div class="spinner-border" role="status" style="width:3rem;height:3rem;"></div>
@@ -1594,6 +1601,7 @@ function carregarProdutosMapeados() {
 
   // 4) Cria iframe, mas deixa escondido
   const src = `https://app.flowborder.com/flow-api/mapeados?RetailerCode=${encodeURIComponent(RetailerCode)}&Token=${encodeURIComponent(Token)}&Mode=client`;
+  console.log("🖼️ Criando iframe com src:", src);
   const iframe = document.createElement('iframe');
   iframe.src = src;
   iframe.style.width = '100%';
@@ -1603,6 +1611,7 @@ function carregarProdutosMapeados() {
   iframe.setAttribute('allowtransparency', 'true');
 
   container.appendChild(iframe);
+  console.log("📌 Iframe adicionado ao DOM (oculto até carregar).");
 
   // 5) Ajuste de altura
   const resizeIframe = () => {
@@ -1617,13 +1626,15 @@ function carregarProdutosMapeados() {
         body.clientHeight, html.clientHeight
       );
       iframe.style.height = height + 'px';
+      console.log("📏 Altura do iframe ajustada para:", height, "px");
     } catch (e) {
       iframe.style.height = Math.max(window.innerHeight - 100, 600) + 'px';
+      console.warn("⚠️ Não foi possível acessar o conteúdo do iframe para medir altura, usando fallback.");
     }
   };
 
   iframe.addEventListener('load', () => {
-    // Some com o spinner e mostra o iframe já com altura ajustada
+    console.log("✅ Iframe carregado.");
     document.getElementById('loading-spinner')?.remove();
     iframe.style.display = 'block';
     resizeIframe();
@@ -1633,20 +1644,28 @@ function carregarProdutosMapeados() {
       const ro = new ResizeObserver(resizeIframe);
       ro.observe(doc.documentElement);
       ro.observe(doc.body);
+      console.log("🔍 ResizeObserver registrado.");
 
       const mo = new MutationObserver(resizeIframe);
       mo.observe(doc.documentElement, { childList: true, subtree: true, attributes: true, characterData: true });
+      console.log("📝 MutationObserver registrado.");
 
       const intervalId = setInterval(resizeIframe, 1000);
+      console.log("⏱️ Intervalo de ajuste de altura iniciado.");
       const observerParent = new MutationObserver(() => {
-        if (!document.body.contains(iframe)) clearInterval(intervalId);
+        if (!document.body.contains(iframe)) {
+          clearInterval(intervalId);
+          console.log("🛑 Intervalo de ajuste de altura encerrado (iframe removido).");
+        }
       });
       observerParent.observe(document.body, { childList: true, subtree: true });
     } catch (e) {
+      console.warn("⚠️ Não foi possível observar mudanças no conteúdo do iframe.");
       setInterval(resizeIframe, 1000);
     }
   });
 }
+
 
 
 //************************************************
