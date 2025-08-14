@@ -1776,9 +1776,10 @@ window.addEventListener("load", function () {
       //   }
       // }
 
-      if (userData.userId !== "U000001") {
+      
+      /*if (userData.userId !== "U000001") {
         formatarModalPix()
-      }
+      }*/
 
       // -------------------------------
 
